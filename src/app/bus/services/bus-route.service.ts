@@ -9,10 +9,23 @@ export class BusRouteService {
   tflService = inject(TflService);
 
   public FindRoute(searchTerm: string): Observable<BusRouteSearchResult[]> {
-    return this.tflService
-      .FindBusRoutes(searchTerm)
-      .pipe(map(this.mapRouteSearchResponseToDto));
+    return this.tflService.FindBusRoutes(searchTerm).pipe(
+      map(this.mapRouteSearchResponseToDto),
+      map((x) => x.sort((a, b) => this.startsWithSortFn(a, b, searchTerm))),
+    );
   }
+
+  private startsWithSortFn = (
+    a: BusRouteSearchResult,
+    b: BusRouteSearchResult,
+    searchTerm: string,
+  ) =>
+    (a.lineName.startsWith(searchTerm) && b.lineName.startsWith(searchTerm)) ||
+    (!a.lineName.startsWith(searchTerm) && !b.lineName.startsWith(searchTerm))
+      ? 0
+      : a.lineName.startsWith(searchTerm)
+        ? -1
+        : 1;
 
   private mapRouteSearchResponseToDto(
     model: RouteSearchResponse,
