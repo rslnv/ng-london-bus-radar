@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormField } from '@angular/material/form-field';
@@ -16,63 +16,66 @@ import {
 import { BusRouteService } from '../../services/bus-route.service';
 import { BusRouteSearchResult } from '../../models/bus-route-search-result';
 import { iif, Observable, of } from 'rxjs';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { BusRouteSearchResultComponent } from '../../components/bus-route-search-result/bus-route-search-result.component';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-bus-find-route',
   standalone: true,
-  imports: [MatInputModule, MatFormField, ReactiveFormsModule, CommonModule],
+  imports: [
+    MatInputModule,
+    MatFormField,
+    ReactiveFormsModule,
+    CommonModule,
+    BusRouteSearchResultComponent,
+    RouterModule,
+  ],
   providers: [BusRouteService],
   templateUrl: './find-route.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  styleUrl: './find-route.component.scss',
 })
 export class FindRouteComponent {
   busRouteService = inject(BusRouteService);
 
   searchControl = new FormControl('', { nonNullable: true });
 
-  private data$: Observable<ViewModel> = this.searchControl.valueChanges.pipe(
-    debounceTime(500),
-    distinctUntilChanged(),
-    switchMap((x) =>
-      iif(
-        () => !x,
-        of({ state: 'idle' } as ViewModel),
-        this.busRouteService.FindRoute(x).pipe(
-          map((x) => {
-            return { state: 'done', data: x } as ViewModel;
-          }),
-          catchError((err) => {
-            console.error('Unable to find bus routes', err);
-            return of({ state: 'error', message: err.message } as ViewModel);
-          }),
-          startWith({ state: 'loading' } as ViewModel),
+  private data$: Observable<ViewModel<BusRouteSearchResult[]>> =
+    this.searchControl.valueChanges.pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      switchMap((searchTerm) =>
+        iif(
+          () => !searchTerm,
+          of({ state: 'idle' } as VM),
+          this.busRouteService.FindRoute(searchTerm).pipe(
+            map((data) => ({ state: 'done', data }) as VM),
+            catchError((err) => {
+              console.error('Unable to find bus routes', err);
+              return of({ state: 'error', message: err.message } as VM);
+            }),
+            startWith({ state: 'loading' } as VM),
+          ),
         ),
       ),
-    ),
-    tap((x) => console.log('Current state', x)),
+      tap((x) => console.log('Current state', x)),
+    );
+
+  viewModel$ = this.data$.pipe(
+    startWith({ state: 'idle' } as ViewModel<BusRouteSearchResult[]>),
   );
-
-  viewModel$ = this.data$.pipe(startWith({ state: 'idle' } as ViewModel));
-
-  // private _viewModel = toSignal(this.data$, {
-  //   initialValue: { state: 'idle' } as ViewModel,
-  // });
-  // // hack to work around issues with Type narrowing of signals in templates
-  // get viewModel() {
-  //   return this._viewModel();
-  // }
 }
 
-type ViewModel =
-  | ViewModelDone
+type VM = ViewModel<BusRouteSearchResult[]>;
+
+type ViewModel<T> =
+  | ViewModelDone<T>
   | ViewModelIdle
   | ViewModelLoading
   | ViewModelError;
 
-type ViewModelDone = {
+type ViewModelDone<T> = {
   state: 'done';
-  data: BusRouteSearchResult[];
+  data: T;
 };
 type ViewModelLoading = {
   state: 'loading';

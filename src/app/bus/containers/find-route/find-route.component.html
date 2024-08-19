@@ -1,29 +1,27 @@
-<mat-form-field class="example-full-width">
+<mat-form-field class="full-width" appearance="outline">
   <mat-label>Search</mat-label>
   <input matInput placeholder="route name" [formControl]="searchControl" />
 </mat-form-field>
 
-<ng-content *ngIf="viewModel$ | async as viewModel">
+<!-- <div class="content"> -->
+  @let viewModel = viewModel$ | async;
+  @if(viewModel) {
   @if (viewModel.state === "done") {
-    @for (item of viewModel.data; track item.id) {
-      <div>
-        {{ item.lineName }}
-        <small>{{ item.direction }}</small>
-        <br />
-        {{ item.destination }}
-      </div>
-    } @empty {
-      <div>No results</div>
-    }
-  } @else if (viewModel.state === "idle") {
-    <div>Start typing to search for a bus route</div>
-  } @else if (viewModel.state === "loading") {
-    <div>Loading...</div>
-  } @else if (viewModel.state === "error") {
-    @if (viewModel.message) {
-      <div>Error: {{ viewModel.message }}</div>
-    } @else {
-      <div>Something went wrong</div>
-    }
+  @for (item of viewModel.data; track item.id) {
+  <app-bus-route-search-result [item]="item" [routerLink]="['bus', item.lineId, 'direction', item.direction]" />
+  } @empty {
+  <p>No results</p>
   }
-</ng-content>
+  } @else if (viewModel.state === "idle") {
+  <div>Start typing to search for a bus route</div>
+  } @else if (viewModel.state === "loading") {
+  <div>Loading...</div>
+  } @else if (viewModel.state === "error") {
+  @if (viewModel.message) {
+  <div>Error: {{ viewModel.message }}</div>
+  } @else {
+  <div>Something went wrong</div>
+  }
+  }
+  }
+<!-- </div> -->

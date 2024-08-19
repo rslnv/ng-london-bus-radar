@@ -1,0 +1,26 @@
+mat-card {
+  width: 100%;
+
+  mat-card-content {
+    display: flex;
+    align-items: center;
+  }
+
+  .badge {
+    margin-right: 1em;
+    min-width: 3em;
+    height: 2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: red;
+    color: #fff;
+    font-weight: bold;
+    border-radius: 0.5em;
+  }
+
+  .destination {
+    font-weight: bold;
+    word-break: break-word;
+  }
+}
