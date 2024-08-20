@@ -4,5 +4,11 @@ import { RouteDetailsComponent } from './bus/containers/route-details/route-deta
 
 export const routes: Routes = [
   { path: '', component: FindRouteComponent },
-  { path: 'bus/:routeId/direction/:direction', component: RouteDetailsComponent },
+  {
+    path: 'bus/:routeId',
+    redirectTo: ({ params }) => {
+      return `bus/${params['routeId']}/outbound`;
+    },
+  },
+  { path: 'bus/:routeId/:direction', component: RouteDetailsComponent },
 ];

@@ -1,0 +1,19 @@
+<div class="card">
+  <div class="badge">
+    @if (stop().stopLetter) {
+      {{ stop().stopLetter }}
+    } @else {
+      <mat-icon>directions_bus</mat-icon>
+    }
+  </div>
+  <div class="content">
+    <div>
+      {{ stop().name }}
+    </div>
+    <div class="line-badges" >
+      @for (line of stop().lines; track line.id) {
+        <span>{{ line.name }}</span>
+      }
+    </div>
+  </div>
+</div>

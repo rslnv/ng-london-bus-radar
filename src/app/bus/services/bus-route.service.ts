@@ -4,16 +4,15 @@ import { map } from 'rxjs/operators';
 import { RouteSearchResponse } from '../../models/api/route-search-response';
 import { Observable } from 'rxjs';
 import { BusRouteSearchResult } from '../models/bus-route-search-result';
+import { RouteSequence } from '../../models/api/route-sequence';
+import {
+  BusRouteDetailsResult,
+  BusRouteDetailsStop,
+  BusRouteDetailsStopLines,
+} from '../models/bus-route-details-result';
 
 export class BusRouteService {
-  tflService = inject(TflService);
-
-  public FindRoute(searchTerm: string): Observable<BusRouteSearchResult[]> {
-    return this.tflService.FindBusRoutes(searchTerm).pipe(
-      map(this.mapRouteSearchResponseToDto),
-      map((x) => x.sort((a, b) => this.startsWithSortFn(a, b, searchTerm))),
-    );
-  }
+  private tflService = inject(TflService);
 
   private startsWithSortFn = (
     a: BusRouteSearchResult,
@@ -21,7 +20,7 @@ export class BusRouteService {
     searchTerm: string,
   ) =>
     (a.lineName.startsWith(searchTerm) && b.lineName.startsWith(searchTerm)) ||
-    (!a.lineName.startsWith(searchTerm) && !b.lineName.startsWith(searchTerm))
+      (!a.lineName.startsWith(searchTerm) && !b.lineName.startsWith(searchTerm))
       ? 0
       : a.lineName.startsWith(searchTerm)
         ? -1
@@ -53,5 +52,53 @@ export class BusRouteService {
       });
     });
     return searchResults;
+  }
+
+  FindRoute(searchTerm: string): Observable<BusRouteSearchResult[]> {
+    return this.tflService.FindBusRoutes(searchTerm).pipe(
+      map(this.mapRouteSearchResponseToDto),
+      map((x) => x.sort((a, b) => this.startsWithSortFn(a, b, searchTerm))),
+    );
+  }
+
+  private mapRouteDetailsResponseToDto(
+    model: RouteSequence,
+  ): BusRouteDetailsResult {
+    const stops = !model.stopPointSequences
+      ? []
+      : model.stopPointSequences[0].stopPoint.map(
+        (sp) =>
+          ({
+            id: sp.id,
+            name: sp.name,
+            stopLetter: sp.stopLetter,
+            lines: sp.lines
+              .filter((l) => l.id !== model.lineId)
+              .map(
+                (l) =>
+                  ({ id: l.id, name: l.name }) as BusRouteDetailsStopLines,
+              ),
+          }) as BusRouteDetailsStop,
+      );
+    const from = !stops ? '' : stops[0].name;
+    const to = !stops ? '' : stops[stops.length - 1].name;
+
+    const detailsResult: BusRouteDetailsResult = {
+      lineId: model.lineId,
+      lineName: model.lineName,
+      direction: model.direction,
+      isOutboundOnly: model.isOutboundOnly,
+      from,
+      to,
+      stops,
+    };
+
+    return detailsResult;
+  }
+
+  RouteDetails(routeId: string, direction: string) {
+    return this.tflService
+      .RouteSequence(routeId, direction)
+      .pipe(map(this.mapRouteDetailsResponseToDto));
   }
 }

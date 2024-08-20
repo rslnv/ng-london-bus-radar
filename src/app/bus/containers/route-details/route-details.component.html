@@ -1,4 +1,23 @@
-Route details
-<ng-container *ngIf="data$ | async as data">
-  {{ data | json }}
-</ng-container>
+@let data = data$ | async;
+@if(data){
+<div class="header">
+  <div class="badge">
+    {{data.lineName}}
+  </div>
+  <div class="destination">
+    <small>from</small>
+    <div>{{data.from}}</div>
+  </div>
+  <mat-icon>compare_arrows</mat-icon>
+  <div class="destination">
+    <small>to</small>
+    <div>{{data.to}}</div>
+  </div>
+</div>
+
+<div class="content">
+  @for(stop of data.stops; track stop.id){
+  <app-bus-route-stop [stop]="stop" />
+  }
+</div>
+}

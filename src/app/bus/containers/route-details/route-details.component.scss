@@ -1,0 +1,38 @@
+.header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  margin-bottom: 1em;
+  // background-color: #fff;
+  // border-bottom: 1px solid #000;
+  // position: fixed;
+  // z-index: 1;
+
+  .badge {
+    min-width: 3em;
+    height: 2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #c33;
+    color: #fff;
+    font-weight: bold;
+    border-radius: 0.5em;
+  }
+
+  .destination {
+    &>div {
+      font-weight: bold;
+      word-break: break-word;
+    }
+  }
+}
+
+.content {
+  app-bus-route-stop {
+    display: block;
+    margin: 0.7em 0;
+    cursor: pointer;
+  }
+}
