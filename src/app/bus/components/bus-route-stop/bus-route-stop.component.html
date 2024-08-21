@@ -10,7 +10,7 @@
     <div>
       {{ stop().name }}
     </div>
-    <div class="line-badges" >
+    <div class="line-badges">
       @for (line of stop().lines; track line.id) {
         <span>{{ line.name }}</span>
       }

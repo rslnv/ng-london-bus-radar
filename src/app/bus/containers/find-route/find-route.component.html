@@ -3,25 +3,26 @@
   <input matInput placeholder="route name" [formControl]="searchControl" />
 </mat-form-field>
 
-<!-- <div class="content"> -->
 @let viewModel = viewModel$ | async;
-@if(viewModel) {
-@if (viewModel.state === "done") {
-@for (item of viewModel.data; track item.id) {
-<app-bus-route-search-result [item]="item" [routerLink]="['bus', item.lineId, item.direction]" />
-} @empty {
-<p>No results</p>
+@if (viewModel) {
+  @if (viewModel.state === 'done') {
+    @for (item of viewModel.data; track item.id) {
+      <app-bus-route-search-result
+        [item]="item"
+        [routerLink]="['bus', item.lineId, item.direction]"
+      />
+    } @empty {
+      <p>No results</p>
+    }
+  } @else if (viewModel.state === 'idle') {
+    <div>Start typing to search for a bus route</div>
+  } @else if (viewModel.state === 'loading') {
+    <div>Loading...</div>
+  } @else if (viewModel.state === 'error') {
+    @if (viewModel.message) {
+      <div>Error: {{ viewModel.message }}</div>
+    } @else {
+      <div>Something went wrong</div>
+    }
+  }
 }
-} @else if (viewModel.state === "idle") {
-<div>Start typing to search for a bus route</div>
-} @else if (viewModel.state === "loading") {
-<div>Loading...</div>
-} @else if (viewModel.state === "error") {
-@if (viewModel.message) {
-<div>Error: {{ viewModel.message }}</div>
-} @else {
-<div>Something went wrong</div>
-}
-}
-}
-<!-- </div> -->

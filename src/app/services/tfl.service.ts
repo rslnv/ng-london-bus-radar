@@ -25,6 +25,9 @@ export class TflService {
     return this.httpClient.get<RouteSequence>(
       `${this.baseUrl}/Line/${routeId}/Route/Sequence/${direction}`,
       { params },
+      {
+        params,
+      },
     );
   }
 }
