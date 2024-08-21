@@ -10,6 +10,7 @@ import {
   BusRouteDetailsStop,
   BusRouteDetailsStopLines,
 } from '../models/bus-route-details-result';
+import { MatchedStop } from '../../models/api/matched-stop';
 
 export class BusRouteService {
   private tflService = inject(TflService);
@@ -20,7 +21,7 @@ export class BusRouteService {
     searchTerm: string,
   ) =>
     (a.lineName.startsWith(searchTerm) && b.lineName.startsWith(searchTerm)) ||
-      (!a.lineName.startsWith(searchTerm) && !b.lineName.startsWith(searchTerm))
+    (!a.lineName.startsWith(searchTerm) && !b.lineName.startsWith(searchTerm))
       ? 0
       : a.lineName.startsWith(searchTerm)
         ? -1
@@ -64,22 +65,35 @@ export class BusRouteService {
   private mapRouteDetailsResponseToDto(
     model: RouteSequence,
   ): BusRouteDetailsResult {
-    const stops = !model.stopPointSequences
-      ? []
-      : model.stopPointSequences[0].stopPoint.map(
-        (sp) =>
-          ({
-            id: sp.id,
-            name: sp.name,
-            stopLetter: sp.stopLetter,
-            lines: sp.lines
-              .filter((l) => l.id !== model.lineId)
-              .map(
-                (l) =>
-                  ({ id: l.id, name: l.name }) as BusRouteDetailsStopLines,
-              ),
-          }) as BusRouteDetailsStop,
-      );
+    const stopPointsOrdered: MatchedStop[] = [];
+
+    if (
+      model.orderedLineRoutes.length !== 0 &&
+      model.stopPointSequences.length !== 0
+    ) {
+      model.orderedLineRoutes[0].naptanIds.forEach((naptanId) => {
+        const stop = model.stopPointSequences[0].stopPoint.find(
+          (sp) => sp.id === naptanId,
+        );
+        if (stop) {
+          stopPointsOrdered.push(stop);
+        }
+      });
+    }
+
+    const stops = stopPointsOrdered.map(
+      (sp) =>
+        ({
+          id: sp.id,
+          name: sp.name,
+          stopLetter: sp.stopLetter,
+          lines: sp.lines
+            .filter((l) => l.id !== model.lineId)
+            .map(
+              (l) => ({ id: l.id, name: l.name }) as BusRouteDetailsStopLines,
+            ),
+        }) as BusRouteDetailsStop,
+    );
     const from = !stops ? '' : stops[0].name;
     const to = !stops ? '' : stops[stops.length - 1].name;
 
