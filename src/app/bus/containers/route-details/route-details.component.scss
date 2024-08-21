@@ -3,7 +3,9 @@
   display: flex;
   align-items: center;
   gap: 1em;
-  margin-bottom: 1em;
+  margin-bottom: 2em;
+  color: #000;
+  text-decoration: none;
   // background-color: #fff;
   // border-bottom: 1px solid #000;
   // position: fixed;
@@ -21,10 +23,27 @@
     border-radius: 0.5em;
   }
 
-  .destination {
-    &>div {
-      font-weight: bold;
-      word-break: break-word;
+  .destinations {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1em;
+
+    .destination {
+
+      &>div {
+        font-weight: bold;
+        word-break: break-word;
+      }
+    }
+
+    .reverse {
+      display: flex;
+      color: #fff;
+      background-color: #195b92;
+      padding: 0.3em;
+      border-radius: 50%;
     }
   }
 }

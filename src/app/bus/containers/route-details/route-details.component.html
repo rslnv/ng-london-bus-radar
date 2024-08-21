@@ -1,23 +1,31 @@
 @let data = data$ | async;
-@if(data){
-<div class="header">
-  <div class="badge">
-    {{data.lineName}}
-  </div>
-  <div class="destination">
-    <small>from</small>
-    <div>{{data.from}}</div>
-  </div>
-  <mat-icon>compare_arrows</mat-icon>
-  <div class="destination">
-    <small>to</small>
-    <div>{{data.to}}</div>
-  </div>
-</div>
+@if (data) {
+  <a
+    [routerLink]="data.isOutboundOnly ? null : ['../', reverseDirection()]"
+    [attr.title]="data.isOutboundOnly ? null : 'Switch route direction'"
+    class="header"
+  >
+    <div class="badge">
+      {{ data.lineName }}
+    </div>
+    <div class="destinations">
+      <div class="destination">
+        <small>from</small>
+        <div>{{ data.from }}</div>
+      </div>
+      <a *ngIf="!data.isOutboundOnly" class="reverse">
+        <mat-icon>compare_arrows</mat-icon>
+      </a>
+      <div class="destination">
+        <small>to</small>
+        <div>{{ data.to }}</div>
+      </div>
+    </div>
+  </a>
 
-<div class="content">
-  @for(stop of data.stops; track stop.id){
-  <app-bus-route-stop [stop]="stop" />
-  }
-</div>
+  <div class="content">
+    @for (stop of data.stops; track stop.id) {
+      <app-bus-route-stop [stop]="stop" />
+    }
+  </div>
 }
