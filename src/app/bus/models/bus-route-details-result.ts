@@ -11,7 +11,7 @@ export type BusRouteDetailsResult = {
 export type BusRouteDetailsStop = {
   id: string;
   name: string;
-  stopLetter: string;
+  stopLetter?: string;
   lines: BusRouteDetailsStopLines[];
 };
 

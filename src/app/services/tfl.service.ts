@@ -3,12 +3,14 @@ import { inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { RouteSearchResponse } from '../models/api/route-search-response';
 import { RouteSequence } from '../models/api/route-sequence';
+import { Prediction } from '../models/api/prediction';
+import { StopPoint } from '../models/api/stop-point';
 
 export class TflService {
   private baseUrl = 'https://api.tfl.gov.uk';
   private httpClient = inject(HttpClient);
 
-  public FindBusRoutes(searchTerm: string): Observable<RouteSearchResponse> {
+  public findBusRoutes(searchTerm: string): Observable<RouteSearchResponse> {
     var params = new HttpParams().set('modes', 'bus');
 
     return this.httpClient.get<RouteSearchResponse>(
@@ -17,7 +19,7 @@ export class TflService {
     );
   }
 
-  public RouteSequence(routeId: string, direction: string): Observable<any> {
+  public routeSequence(routeId: string, direction: string): Observable<any> {
     var params = new HttpParams()
       .set('serviceTypes', 'Regular,Night')
       .set('excludeCrowding', true);
@@ -25,6 +27,21 @@ export class TflService {
     return this.httpClient.get<RouteSequence>(
       `${this.baseUrl}/Line/${routeId}/Route/Sequence/${direction}`,
       { params },
+    );
+  }
+
+  public stopPointDetails(stopId: string): Observable<StopPoint> {
+    var params = new HttpParams().set('includeCrowdingData', false);
+
+    return this.httpClient.get<StopPoint>(
+      `${this.baseUrl}/StopPoint/${stopId}`,
+      { params },
+    );
+  }
+
+  public stopPointArrivals(stopId: string): Observable<Prediction[]> {
+    return this.httpClient.get<Prediction[]>(
+      `${this.baseUrl}/StopPoint/${stopId}/Arrivals`,
     );
   }
 }

@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { FindRouteComponent } from './bus/containers/find-route/find-route.component';
 import { RouteDetailsComponent } from './bus/containers/route-details/route-details.component';
+import { StopArrivalsComponent } from './stop/containers/arrivals.component';
 
 export const routes: Routes = [
   { path: '', component: FindRouteComponent },
@@ -11,4 +12,5 @@ export const routes: Routes = [
     },
   },
   { path: 'bus/:routeId/:direction', component: RouteDetailsComponent },
+  { path: 'stop/:stopId/:lineId', component: StopArrivalsComponent },
 ];

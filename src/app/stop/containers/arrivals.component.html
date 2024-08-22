@@ -1,0 +1,27 @@
+<ng-container *ngIf="details$ | async as details">
+  <p>{{ details.commonName }}</p>
+  @let props = stopProperties(details);
+  <p>
+    {{ props.stopLetter }}
+    towards {{ props.towards }}
+  </p>
+</ng-container>
+
+<hr />
+
+<ng-container *ngIf="data$ | async as data">
+  @for (arrival of data; track arrival.id; let last = $last) {
+    <div>
+      <div>{{ arrival.lineName }}</div>
+      <div>{{ arrival.destinationName }}</div>
+      <div>
+        in
+        <b>{{ arrival.timeToStation }}</b>
+        seconds
+      </div>
+    </div>
+    @if (!last) {
+      <hr />
+    }
+  }
+</ng-container>

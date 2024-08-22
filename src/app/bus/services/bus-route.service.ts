@@ -56,7 +56,7 @@ export class BusRouteService {
   }
 
   FindRoute(searchTerm: string): Observable<BusRouteSearchResult[]> {
-    return this.tflService.FindBusRoutes(searchTerm).pipe(
+    return this.tflService.findBusRoutes(searchTerm).pipe(
       map(this.mapRouteSearchResponseToDto),
       map((x) => x.sort((a, b) => this.startsWithSortFn(a, b, searchTerm))),
     );
@@ -112,7 +112,7 @@ export class BusRouteService {
 
   RouteDetails(routeId: string, direction: string) {
     return this.tflService
-      .RouteSequence(routeId, direction)
+      .routeSequence(routeId, direction)
       .pipe(map(this.mapRouteDetailsResponseToDto));
   }
 }

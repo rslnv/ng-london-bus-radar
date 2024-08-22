@@ -10,7 +10,7 @@ export type MatchedStop = {
   towards: string;
   modes: string[];
   stopType: string;
-  stopLetter: string;
+  stopLetter?: string;
   zone: string;
   accessibilitySummary: string;
   hasDisruption: boolean;
