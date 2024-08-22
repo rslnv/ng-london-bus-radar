@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { TflService } from '../../services/tfl.service';
 import { ActivatedRoute } from '@angular/router';
-import { switchMap } from 'rxjs';
+import { combineLatest, switchMap, tap } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { StopPoint } from '../../models/api/stop-point';
 
@@ -16,12 +16,14 @@ export class StopArrivalsComponent {
   private route = inject(ActivatedRoute);
   private tflService = inject(TflService);
 
-  details$ = this.route.params.pipe(
-    switchMap((params) => this.tflService.stopPointDetails(params['stopId'])),
-  );
-
   data$ = this.route.params.pipe(
-    switchMap((params) => this.tflService.stopPointArrivals(params['stopId'])),
+    switchMap((params) =>
+      combineLatest({
+        details: this.tflService.stopPointDetails(params['stopId']),
+        arrivals: this.tflService.stopPointArrivals(params['stopId']),
+      }),
+    ),
+    tap(console.log),
   );
 
   stopProperties(stop: StopPoint) {

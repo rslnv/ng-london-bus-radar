@@ -1,16 +1,15 @@
-<ng-container *ngIf="details$ | async as details">
-  <p>{{ details.commonName }}</p>
-  @let props = stopProperties(details);
+@let data = data$ | async;
+@if (data) {
+  <p>{{ data.details.commonName }}</p>
+  @let props = stopProperties(data.details);
   <p>
     {{ props.stopLetter }}
     towards {{ props.towards }}
   </p>
-</ng-container>
 
-<hr />
+  <hr />
 
-<ng-container *ngIf="data$ | async as data">
-  @for (arrival of data; track arrival.id; let last = $last) {
+  @for (arrival of data.arrivals; track arrival.id; let last = $last) {
     <div>
       <div>{{ arrival.lineName }}</div>
       <div>{{ arrival.destinationName }}</div>
@@ -24,4 +23,4 @@
       <hr />
     }
   }
-</ng-container>
+}
