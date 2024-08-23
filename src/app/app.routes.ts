@@ -13,4 +13,5 @@ export const routes: Routes = [
   },
   { path: 'bus/:routeId/:direction', component: RouteDetailsComponent },
   { path: 'stop/:stopId/:lineId', component: StopArrivalsComponent },
+  { path: 'stop/:stopId', component: StopArrivalsComponent },
 ];

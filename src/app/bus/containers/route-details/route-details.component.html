@@ -8,14 +8,19 @@
     <div class="badge">
       {{ data.lineName }}
     </div>
+
     <div class="destinations">
       <div class="destination">
         <small>from</small>
         <div>{{ data.from }}</div>
       </div>
-      <a *ngIf="!data.isOutboundOnly" class="reverse">
-        <mat-icon>compare_arrows</mat-icon>
-      </a>
+
+      @if (!data.isOutboundOnly) {
+        <a class="reverse">
+          <mat-icon>compare_arrows</mat-icon>
+        </a>
+      }
+
       <div class="destination">
         <small>to</small>
         <div>{{ data.to }}</div>

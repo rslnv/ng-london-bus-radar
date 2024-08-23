@@ -1,26 +1,37 @@
 @let data = data$ | async;
 @if (data) {
-  <p>{{ data.details.commonName }}</p>
-  @let props = stopProperties(data.details);
-  <p>
-    {{ props.stopLetter }}
-    towards {{ props.towards }}
-  </p>
+  <div class="header">
+    <p>{{ data.details.commonName }}</p>
+    @let props = stopProperties(data.details);
+    <p>
+      {{ props.stopLetter }}
+      towards {{ props.towards }}
+    </p>
 
-  <hr />
+    <app-line-filter
+      [lines]="data.details.lines"
+      [preSelectedLine]="preSelectedLine()"
+      (filter)="filter.set($event)"
+    />
+  </div>
 
-  @for (arrival of data.arrivals; track arrival.id; let last = $last) {
-    <div>
-      <div>{{ arrival.lineName }}</div>
-      <div>{{ arrival.destinationName }}</div>
+  <div class="content">
+    @for (arrival of data.arrivals; track arrival.tripId; let last = $last) {
       <div>
-        in
-        <b>{{ arrival.timeToStation }}</b>
-        seconds
+        <div>{{ arrival.lineName }}</div>
+        <div>{{ arrival.destinationName }}</div>
+        <div>
+          <b>{{ arrival.timeToStation | timeToStation }} </b>
+          <div>{{ arrival.timeToStation }}</div>
+        </div>
       </div>
-    </div>
-    @if (!last) {
-      <hr />
+      @if (!last) {
+        <hr />
+      }
     }
-  }
+  </div>
+}
+
+@if (filter()) {
+  <p>timetable goes here</p>
 }

@@ -1,0 +1,11 @@
+<div class="filter">
+  @if(lines().length > 1){
+  <div [class.active]="selectedId()==='showAll'">
+    <button (click)="select.set('showAll')">All</button>
+  </div>
+  } @for(line of lines(); track line.id){
+  <div [class.active]="selectedId()===line.id">
+    <button (click)="select.set(line.id)">{{line.name}}</button>
+  </div>
+  }
+</div>

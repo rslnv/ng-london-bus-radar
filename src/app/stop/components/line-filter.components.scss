@@ -1,0 +1,42 @@
+.filter {
+  display: flex;
+
+  &>* {
+    min-width: 3em;
+    height: 3em;
+    border: 1px solid #aaa;
+    border-right: none;
+
+    &:last-of-type {
+      border-right: 1px solid #aaa;
+    }
+
+    &:hover {
+      background-color: #ddd;
+    }
+
+    &.active {
+      border-color: #c33;
+      background-color: #c33;
+
+      &:hover {
+        background-color: #b22;
+      }
+
+      button {
+        color: #fff;
+      }
+    }
+
+    button {
+      width: 100%;
+      height: 100%;
+      display: block;
+      background-color: transparent;
+      border: none;
+      font-size: 1.1em;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  }
+}
