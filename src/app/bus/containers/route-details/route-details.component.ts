@@ -1,12 +1,12 @@
-import { JsonPipe, CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
-import { ActivatedRoute, RouterModule } from '@angular/router';
-import { map, switchMap } from 'rxjs';
-import { BusRouteService } from '../../services/bus-route.service';
-import { MatIcon } from '@angular/material/icon';
+import { CommonModule, JsonPipe } from '@angular/common';
+import { Component, computed, inject, input } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { MatSuffix } from '@angular/material/form-field';
+import { MatIcon } from '@angular/material/icon';
+import { RouterModule } from '@angular/router';
+import { combineLatest, switchMap } from 'rxjs';
 import { BusRoutStopComponent } from '../../components/bus-route-stop/bus-route-stop.component';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { BusRouteService } from '../../services/bus-route.service';
 
 @Component({
   selector: 'app-bus-route-details',
@@ -24,20 +24,21 @@ import { toSignal } from '@angular/core/rxjs-interop';
   standalone: true,
 })
 export class RouteDetailsComponent {
-  route = inject(ActivatedRoute);
   busRouteService = inject(BusRouteService);
 
-  reverseDirection = toSignal(
-    this.route.params.pipe(
-      map((params) =>
-        params['direction'] === 'outbound' ? 'inbound' : 'outbound',
-      ),
-    ),
+  routeId = input.required<string>();
+  direction = input.required<string>();
+
+  reverseDirection = computed(() =>
+    this.direction() === 'outbound' ? 'inbound' : 'outbound',
   );
 
-  data$ = this.route.params.pipe(
-    switchMap((params) =>
-      this.busRouteService.RouteDetails(params['routeId'], params['direction']),
+  data$ = combineLatest([
+    toObservable(this.routeId),
+    toObservable(this.direction),
+  ]).pipe(
+    switchMap(([routeId, direction]) =>
+      this.busRouteService.RouteDetails(routeId, direction),
     ),
   );
 }

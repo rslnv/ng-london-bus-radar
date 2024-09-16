@@ -1,22 +1,25 @@
-@let data = data$ | async;
-@if (data) {
+@let details = details$ | async;
+@if (details) {
   <div class="header">
-    <p>{{ data.details.commonName }}</p>
-    @let props = stopProperties(data.details);
+    <p>{{ details.commonName }}</p>
+    @let props = stopProperties(details);
     <p>
       {{ props.stopLetter }}
       towards {{ props.towards }}
     </p>
 
     <app-line-filter
-      [lines]="data.details.lines"
-      [preSelectedLine]="preSelectedLine()"
+      [lines]="details.lines"
+      [preSelectedLine]="lineId()"
       (filter)="filter.set($event)"
     />
   </div>
+}
 
+@let arrivals = arrivals$ | async;
+@if (arrivals) {
   <div class="content">
-    @for (arrival of data.arrivals; track arrival.tripId; let last = $last) {
+    @for (arrival of arrivals; track arrival.tripId; let last = $last) {
       <div>
         <div>{{ arrival.lineName }}</div>
         <div>{{ arrival.destinationName }}</div>
