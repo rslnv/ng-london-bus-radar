@@ -2,21 +2,25 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, input, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { map, switchMap, tap } from 'rxjs';
-import { StopPoint } from '../../models/api/stop-point';
-import { TimeToStationPipe } from '../../pipes/time-to-station.pipe';
-import { TflService } from '../../services/tfl.service';
-import { LineFilterComponent } from '../components/line-filter.components';
+import { TimeToStationPipe } from '../../../pipes/time-to-station.pipe';
+import { LineFilterComponent } from '../../components/line-filter.components';
+import { StopService } from '../../services/stop.service';
+import { TimetableComponent } from '../timetable/timetable.component';
 
 @Component({
   selector: 'app-stop-arrivals',
   templateUrl: './arrivals.component.html',
   styleUrl: './arrivals.component.scss',
-  imports: [CommonModule, LineFilterComponent, TimeToStationPipe],
-  providers: [TflService],
+  imports: [
+    CommonModule,
+    LineFilterComponent,
+    TimeToStationPipe,
+    TimetableComponent,
+  ],
   standalone: true,
 })
 export class StopArrivalsComponent {
-  private tflService = inject(TflService);
+  private stopService = inject(StopService);
 
   lineId = input.required<string>();
 
@@ -26,13 +30,11 @@ export class StopArrivalsComponent {
   filter = signal<string | null>(null);
   private filter$ = toObservable(this.filter);
 
-  details$ = this.stopId$.pipe(
-    switchMap((s) => this.tflService.stopPointDetails(s)),
-  );
+  details$ = this.stopId$.pipe(switchMap((s) => this.stopService.details(s)));
 
   arrivals$ = this.stopId$.pipe(
     switchMap((s) =>
-      this.tflService.stopPointArrivals(s).pipe(
+      this.stopService.arrivals(s).pipe(
         switchMap((predictions) =>
           this.filter$.pipe(
             tap(console.log),
@@ -48,14 +50,4 @@ export class StopArrivalsComponent {
     ),
     tap(console.log),
   );
-
-  stopProperties(stop: StopPoint) {
-    const child = stop.children.find((s) => s.id === this.stopId());
-
-    return {
-      stopLetter: stop.stopLetter ?? child?.stopLetter,
-      towards: child?.additionalProperties.find((ap) => ap.key === 'Towards')
-        ?.value,
-    };
-  }
 }

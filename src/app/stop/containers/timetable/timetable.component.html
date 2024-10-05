@@ -1,0 +1,15 @@
+<p>timetable goes here</p>
+
+@let data = data$ | async;
+@if (data) {
+  <div>
+    <div>Weekday</div>
+    <app-schedule [journeys]="data.weekday" />
+    <hr />
+    <div>Saturday</div>
+    <app-schedule [journeys]="data.saturday" />
+    <hr />
+    <div>Sunday</div>
+    <app-schedule [journeys]="data.sunday" />
+  </div>
+}

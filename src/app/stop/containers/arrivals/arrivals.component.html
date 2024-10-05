@@ -2,11 +2,16 @@
 @if (details) {
   <div class="header">
     <p>{{ details.commonName }}</p>
-    @let props = stopProperties(details);
-    <p>
-      {{ props.stopLetter }}
-      towards {{ props.towards }}
-    </p>
+
+    <div class="stop-legend">
+      <div class="stop-letter">
+        {{ details.stopLetter }}
+      </div>
+
+      @if (details.towards) {
+        <div class="towards">towards {{ details.towards }}</div>
+      }
+    </div>
 
     <app-line-filter
       [lines]="details.lines"
@@ -19,7 +24,7 @@
 @let arrivals = arrivals$ | async;
 @if (arrivals) {
   <div class="content">
-    @for (arrival of arrivals; track arrival.tripId; let last = $last) {
+    @for (arrival of arrivals; track arrival.id; let last = $last) {
       <div>
         <div>{{ arrival.lineName }}</div>
         <div>{{ arrival.destinationName }}</div>
@@ -36,5 +41,5 @@
 }
 
 @if (filter()) {
-  <p>timetable goes here</p>
+  <app-stop-timetable [stopId]="stopId()" [lineId]="lineId()" />
 }

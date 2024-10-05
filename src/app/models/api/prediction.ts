@@ -21,4 +21,6 @@ export type Prediction = {
   timeToLive: string;
   modeName: string;
   timing: PredictionTiming;
+
+  tripId: string;
 };
