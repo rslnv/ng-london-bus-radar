@@ -1,3 +1,24 @@
 .header {
-  margin-bottom: 2em;
+  margin-bottom: 1em;
+}
+
+.view-filter {
+  margin-top: 1em;
+  margin-bottom: 1em;
+
+  text-align: center;
+
+  mat-button-toggle-group {
+    min-width: 18em;
+    max-width: 28em;
+    width: 90%;
+  }
+
+  mat-button-toggle {
+    flex: 1;
+  }
+}
+
+.content {
+  margin-top: 1em;
 }

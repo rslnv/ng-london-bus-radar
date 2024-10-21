@@ -1,11 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, input, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Component, inject, input, signal, effect } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { map, switchMap, tap } from 'rxjs';
 import { TimeToStationPipe } from '../../../pipes/time-to-station.pipe';
-import { LineFilterComponent } from '../../components/line-filter.components';
+import { LineFilterComponent } from '../../components/line-filter/line-filter.components';
 import { StopService } from '../../services/stop.service';
 import { TimetableComponent } from '../timetable/timetable.component';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { ArrivalTimeSpan } from '../../models/arrival-time-span';
 
 @Component({
   selector: 'app-stop-arrivals',
@@ -13,9 +16,11 @@ import { TimetableComponent } from '../timetable/timetable.component';
   styleUrl: './arrivals.component.scss',
   imports: [
     CommonModule,
+    FormsModule,
     LineFilterComponent,
     TimeToStationPipe,
     TimetableComponent,
+    MatButtonToggleModule,
   ],
   standalone: true,
 })
@@ -27,8 +32,10 @@ export class StopArrivalsComponent {
   stopId = input.required<string>();
   stopId$ = toObservable(this.stopId);
 
-  filter = signal<string | null>(null);
-  private filter$ = toObservable(this.filter);
+  lineFilter = signal<string | null>(null);
+  private lineFilter$ = toObservable(this.lineFilter);
+
+  arrivalTimeSpan = signal<ArrivalTimeSpan>('live');
 
   details$ = this.stopId$.pipe(switchMap((s) => this.stopService.details(s)));
 
@@ -36,7 +43,7 @@ export class StopArrivalsComponent {
     switchMap((s) =>
       this.stopService.arrivals(s).pipe(
         switchMap((predictions) =>
-          this.filter$.pipe(
+          this.lineFilter$.pipe(
             tap(console.log),
             map((f) => {
               if (!f) {

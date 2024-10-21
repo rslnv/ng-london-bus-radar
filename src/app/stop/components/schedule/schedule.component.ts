@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, input } from '@angular/core';
+import { Journey } from '../../models/journey';
 
 @Component({
   selector: 'app-schedule',
@@ -7,8 +8,9 @@ import { Component, computed, input } from '@angular/core';
     @for (h of hours(); track h) {
       <div class="row">
         <div class="hour">{{ h }}</div>
-        @for (m of getMinutes(journeys(), h); track m) {
-          <div class="minute">{{ m }}</div>
+        @let minutes = getMinutes(journeys(), h);
+        @for (m of minutes; track m.id) {
+          <div class="minute">{{ m.value }}</div>
         }
       </div>
     }
@@ -23,8 +25,6 @@ import { Component, computed, input } from '@angular/core';
       .hour,
       .minute {
         padding: 5px;
-        /* min-width: 28px; */
-        /* text-align: right; */
       }
     }
   `,
@@ -35,12 +35,12 @@ export class ScheduleComponent {
   journeys = input.required<Journey[]>();
   hours = computed(() => new Set(this.journeys().map((j) => j.hour)));
 
-  getMinutes(journeys: Journey[], hour: string): string[] {
-    return journeys.filter((j) => j.hour === hour).map((j) => j.minute);
+  getMinutes(
+    journeys: Journey[],
+    hour: string,
+  ): { id: string; value: string }[] {
+    return journeys
+      .filter((j) => j.hour === hour)
+      .map((j) => ({ id: `${hour}${j.minute}`, value: j.minute }));
   }
 }
-
-export type Journey = {
-  hour: string;
-  minute: string;
-};

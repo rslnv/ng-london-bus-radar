@@ -16,13 +16,27 @@
     <app-line-filter
       [lines]="details.lines"
       [preSelectedLine]="lineId()"
-      (filter)="filter.set($event)"
+      (filter)="lineFilter.set($event)"
     />
   </div>
 }
 
+@if (lineFilter()) {
+  <div class="view-filter">
+    <mat-button-toggle-group
+      hideSingleSelectionIndicator="true"
+      [(ngModel)]="arrivalTimeSpan"
+    >
+      <mat-button-toggle value="live">Live</mat-button-toggle>
+      <mat-button-toggle value="weekday">Weekday</mat-button-toggle>
+      <mat-button-toggle value="saturday">Saturday</mat-button-toggle>
+      <mat-button-toggle value="sunday">Sunday</mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+}
+
 @let arrivals = arrivals$ | async;
-@if (arrivals) {
+@if (arrivals && (!lineFilter() || arrivalTimeSpan() === 'live')) {
   <div class="content">
     @for (arrival of arrivals; track arrival.id; let last = $last) {
       <div>
@@ -30,7 +44,6 @@
         <div>{{ arrival.destinationName }}</div>
         <div>
           <b>{{ arrival.timeToStation | timeToStation }} </b>
-          <div>{{ arrival.timeToStation }}</div>
         </div>
       </div>
       @if (!last) {
@@ -38,8 +51,10 @@
       }
     }
   </div>
-}
-
-@if (filter()) {
-  <app-stop-timetable [stopId]="stopId()" [lineId]="lineId()" />
+} @else if (lineFilter()) {
+  <app-stop-timetable
+    [stopId]="stopId()"
+    [lineId]="lineFilter()!"
+    [arrivalTimeSpan]="arrivalTimeSpan()"
+  />
 }
