@@ -17,7 +17,7 @@
   } @else if (viewModel.state === 'idle') {
     <div>Start typing to search for a bus route</div>
   } @else if (viewModel.state === 'loading') {
-    <div>Loading...</div>
+    <app-loading />
   } @else if (viewModel.state === 'error') {
     @if (viewModel.message) {
       <div>Error: {{ viewModel.message }}</div>

@@ -1,20 +1,30 @@
-@let data = data$ | async;
-@if (data) {
-  @switch (arrivalTimeSpan()) {
-    @case ('weekday') {
-      <div>Monday - Friday</div>
-      <app-schedule [journeys]="data.weekday" />
+@let vm = viewModel$ | async;
+@if (vm) {
+  @switch (vm.state) {
+    @case ('loading') {
+      <app-loading />
     }
-    @case ('saturday') {
-      <div>Saturday</div>
-      <app-schedule [journeys]="data.saturday" />
+    @case ('error') {
+      <app-error (onRefresh)="refresherSubject.next()" />
     }
-    @case ('sunday') {
-      <div>Sunday - Bank Holidays</div>
-      <app-schedule [journeys]="data.sunday" />
-    }
-    @default {
-      <div>Unexpected time span</div>
+    @case ('done') {
+      @switch (arrivalTimeSpan()) {
+        @case ('weekday') {
+          <div>Monday - Friday</div>
+          <app-schedule [journeys]="vm.data.weekday" />
+        }
+        @case ('saturday') {
+          <div>Saturday</div>
+          <app-schedule [journeys]="vm.data.saturday" />
+        }
+        @case ('sunday') {
+          <div>Sunday - Bank Holidays</div>
+          <app-schedule [journeys]="vm.data.sunday" />
+        }
+        @default {
+          <div>Unexpected time span</div>
+        }
+      }
     }
   }
 }

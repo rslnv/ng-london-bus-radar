@@ -1,10 +1,11 @@
 import { inject, Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
+import { delay, map, Observable, tap } from 'rxjs';
 import { StopPoint } from '../../models/api/stop-point';
+import { TimetableResponse } from '../../models/api/timetable-response';
 import { TflService } from '../../services/tfl.service';
 import { StopArrival } from '../models/stop-arrival';
 import { StopDetails } from '../models/stop-details';
-import { TimetableResponse } from '../../models/api/timetable-response';
+import { StopTimetable, StopTimetableItem } from '../models/stop-timetable';
 
 @Injectable({
   providedIn: 'root',
@@ -51,8 +52,14 @@ export class StopService {
     );
   }
 
-  timetable(stopId: string, lineId: string): Observable<any> {
+  timetable(stopId: string, lineId: string): Observable<StopTimetable> {
     return this.tflService.stopPointTimetable(lineId, stopId).pipe(
+      // delay(2000),
+      // tap(() => {
+      //   if (Math.random() < 0.5) {
+      //     throw new Error('Just throwing');
+      //   }
+      // }),
       map((response) => ({
         weekday: this.timetableForDay(response, 'Monday to Friday'),
         saturday: this.timetableForDay(response, 'Saturday'),
@@ -64,9 +71,12 @@ export class StopService {
   private timetableForDay(
     response: TimetableResponse,
     typeOfDay: 'Monday to Friday' | 'Saturday' | 'Sunday',
-  ) {
-    return response.timetable.routes[0]?.schedules
-      .find((s) => s.name === typeOfDay)
-      ?.knownJourneys.map((kj) => ({ hour: kj.hour, minute: kj.minute }));
+  ): StopTimetableItem[] {
+    return (
+      response.timetable.routes[0]?.schedules
+        .find((s) => s.name === typeOfDay)
+        ?.knownJourneys.map((kj) => ({ hour: kj.hour, minute: kj.minute })) ??
+      []
+    );
   }
 }
