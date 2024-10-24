@@ -1,6 +1,6 @@
 # ng-london-bus-radar
 
-Angular app that consumes TfL api.
+Angular app that consumes [TfL api](https://api-portal.tfl.gov.uk/).
 Focus is on London buses:
 
 - search for routes
