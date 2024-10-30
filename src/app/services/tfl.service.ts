@@ -6,6 +6,7 @@ import { RouteSequence } from '../models/api/route-sequence';
 import { Prediction } from '../models/api/prediction';
 import { StopPoint } from '../models/api/stop-point';
 import { TimetableResponse } from '../models/api/timetable-response';
+import { SearchResponse } from '../models/api/search-response';
 
 @Injectable({
   providedIn: 'root',
@@ -31,6 +32,21 @@ export class TflService {
     return this.httpClient.get<RouteSequence>(
       `${this.baseUrl}/Line/${routeId}/Route/Sequence/${direction}`,
       { params },
+    );
+  }
+
+  public findStops(searchTerm: string): Observable<SearchResponse> {
+    var params = new HttpParams().set('modes', 'bus');
+
+    return this.httpClient.get<SearchResponse>(
+      `${this.baseUrl}/StopPoint/Search/${searchTerm}`,
+      { params },
+    );
+  }
+
+  public listStopPoints(ids: string[]): Observable<StopPoint[]> {
+    return this.httpClient.get<StopPoint[]>(
+      `${this.baseUrl}/StopPoint/${ids.join(',')}`,
     );
   }
 

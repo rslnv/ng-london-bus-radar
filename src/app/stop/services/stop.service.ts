@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { delay, map, Observable, tap } from 'rxjs';
+import { delay, map, Observable, switchMap, tap } from 'rxjs';
 import { StopPoint } from '../../models/api/stop-point';
 import { TimetableResponse } from '../../models/api/timetable-response';
 import { TflService } from '../../services/tfl.service';
@@ -13,11 +13,36 @@ import { StopTimetable, StopTimetableItem } from '../models/stop-timetable';
 export class StopService {
   private tflService = inject(TflService);
 
+  find(searchTerm: string): Observable<any[]> {
+    return this.tflService.findStops(searchTerm).pipe(
+      map((response) => response.matches.map((match) => match.id)),
+      switchMap((ids) => this.tflService.listStopPoints(ids)),
+      map((stopPoints) =>
+        stopPoints
+          .map((stop) => {
+            return stop.children.map((child) => {
+              return {
+                id: child.naptanId,
+                commonName: child.commonName,
+                stopLetter: child.stopLetter,
+                lines: child.lines.map((l) => ({ id: l.id, name: l.name })),
+                towards: child.additionalProperties.find(
+                  (ap) => ap.key === 'Towards',
+                )?.value,
+              };
+            });
+          })
+          .flat(),
+      ),
+    );
+  }
+
   details(stopId: string): Observable<StopDetails> {
     return this.tflService.stopPointDetails(stopId).pipe(
       map((details) => {
         const stopProperties = this.getStopProperties(details, stopId);
         return {
+          id: stopId,
           stopLetter: stopProperties.stopLetter,
           towards: stopProperties.towards,
           commonName: details.commonName,

@@ -1,4 +1,5 @@
 export type StopDetails = {
+  id: string;
   stopLetter?: string;
   towards?: string;
   commonName: string;
