@@ -38,7 +38,7 @@ export class RouteDetailsComponent {
     toObservable(this.direction),
   ]).pipe(
     switchMap(([routeId, direction]) =>
-      this.busRouteService.RouteDetails(routeId, direction),
+      this.busRouteService.details(routeId, direction),
     ),
   );
 }

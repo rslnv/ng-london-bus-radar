@@ -27,6 +27,8 @@ import { BusRouteService } from '../../services/bus-route.service';
 
 @Component({
   selector: 'app-bus-find-route',
+  templateUrl: './find-route.component.html',
+  styleUrl: './find-route.component.scss',
   standalone: true,
   imports: [
     MatInputModule,
@@ -38,8 +40,6 @@ import { BusRouteService } from '../../services/bus-route.service';
     LoadingComponent,
   ],
   providers: [BusRouteService],
-  templateUrl: './find-route.component.html',
-  styleUrl: './find-route.component.scss',
 })
 export class FindRouteComponent {
   busRouteService = inject(BusRouteService);
@@ -53,7 +53,7 @@ export class FindRouteComponent {
       iif(
         () => !searchTerm,
         of({ state: 'idle' } as VM),
-        this.busRouteService.FindRoute(searchTerm).pipe(
+        this.busRouteService.find(searchTerm).pipe(
           map((data) => ({ state: 'done', data }) as VM),
           catchError((err) => {
             console.error('Unable to find bus routes', err);
