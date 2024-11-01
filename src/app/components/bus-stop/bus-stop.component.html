@@ -10,6 +10,9 @@
     <div>
       {{ stop().name }}
     </div>
+    @if (stop().towards) {
+      <div class="towards">towards {{ stop().towards }}</div>
+    }
     <div class="line-badges">
       @for (line of stop().lines; track line.id) {
         <span>{{ line.name }}</span>

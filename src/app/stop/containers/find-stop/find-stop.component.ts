@@ -3,17 +3,20 @@ import { Component, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatFormField } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { RouterModule } from '@angular/router';
 import { iif, Observable, of } from 'rxjs';
 import {
   catchError,
   debounceTime,
   distinctUntilChanged,
+  filter,
   map,
   startWith,
   switchMap,
   tap,
 } from 'rxjs/operators';
-import { ErrorComponent } from '../../../components/loading/error.component';
+import { BusStopComponent } from '../../../components/bus-stop/bus-stop.component';
+import { ErrorComponent } from '../../../components/error/error.component';
 import { LoadingComponent } from '../../../components/loading/loading.component';
 import {
   ViewStateDone,
@@ -25,16 +28,18 @@ import { StopService } from '../../services/stop.service';
 
 @Component({
   selector: 'app-find-stop',
+  standalone: true,
   templateUrl: './find-stop.component.html',
   styleUrl: './find-stop.component.scss',
-  standalone: true,
   imports: [
+    BusStopComponent,
+    CommonModule,
+    ErrorComponent,
+    LoadingComponent,
     MatFormField,
     MatInputModule,
     ReactiveFormsModule,
-    CommonModule,
-    LoadingComponent,
-    ErrorComponent,
+    RouterModule,
   ],
   providers: [StopService],
 })
@@ -44,6 +49,7 @@ export class FindStopComponent {
   searchControl = new FormControl('', { nonNullable: true });
 
   private data$: Observable<VM> = this.searchControl.valueChanges.pipe(
+    filter((searchTerm) => searchTerm.length > 3),
     debounceTime(500),
     distinctUntilChanged(),
     switchMap((searchTerm) =>

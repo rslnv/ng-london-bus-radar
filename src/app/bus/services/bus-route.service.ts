@@ -5,11 +5,7 @@ import { RouteSearchResponse } from '../../models/api/route-search-response';
 import { Observable } from 'rxjs';
 import { BusRouteSearchResult } from '../models/bus-route-search-result';
 import { RouteSequence } from '../../models/api/route-sequence';
-import {
-  BusRouteDetailsResult,
-  BusRouteDetailsStop,
-  BusRouteDetailsStopLines,
-} from '../models/bus-route-details-result';
+import { BusRouteDetailsResult } from '../models/bus-route-details-result';
 import { MatchedStop } from '../../models/api/matched-stop';
 
 export class BusRouteService {
@@ -81,19 +77,14 @@ export class BusRouteService {
       });
     }
 
-    const stops = stopPointsOrdered.map(
-      (sp) =>
-        ({
-          id: sp.id,
-          name: sp.name,
-          stopLetter: sp.stopLetter,
-          lines: sp.lines
-            .filter((l) => l.id !== model.lineId)
-            .map(
-              (l) => ({ id: l.id, name: l.name }) as BusRouteDetailsStopLines,
-            ),
-        }) as BusRouteDetailsStop,
-    );
+    const stops = stopPointsOrdered.map((sp) => ({
+      id: sp.id,
+      name: sp.name,
+      stopLetter: sp.stopLetter,
+      lines: sp.lines
+        .filter((l) => l.id !== model.lineId)
+        .map((l) => ({ id: l.id, name: l.name })),
+    }));
     const from = !stops ? '' : stops[0].name;
     const to = !stops ? '' : stops[stops.length - 1].name;
 

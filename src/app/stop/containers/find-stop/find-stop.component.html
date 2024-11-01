@@ -1,20 +1,16 @@
 <mat-form-field class="full-width" appearance="outline">
   <mat-label>Search</mat-label>
-  <input matInput placeholder="route name" [formControl]="searchControl" />
+  <input matInput placeholder="stop name" [formControl]="searchControl" />
 </mat-form-field>
 
 @let viewModel = viewModel$ | async;
 @if (viewModel) {
   @if (viewModel.state === 'done') {
-    {{ viewModel.data | json}}
-    <!-- @for (item of viewModel.data; track item.id) { -->
-    <!--   <app-bus-route-search-result -->
-    <!--     [item]="item" -->
-    <!--     [routerLink]="['bus', item.lineId, item.direction]" -->
-    <!--   /> -->
-    <!-- } @empty { -->
-    <!--   <p>No results</p> -->
-    <!-- } -->
+    @for (stop of viewModel.data; track stop.id) {
+      <app-bus-stop [stop]="stop" [routerLink]="['/stop', stop.id]" />
+    } @empty {
+      <p>No results</p>
+    }
   } @else if (viewModel.state === 'idle') {
     <div>Search for a bus stop by name, SMS code</div>
   } @else if (viewModel.state === 'loading') {

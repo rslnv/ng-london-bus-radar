@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { BehaviorSubject, combineLatest, of, startWith, switchMap } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { ErrorComponent } from '../../../components/loading/error.component';
+import { ErrorComponent } from '../../../components/error/error.component';
 import { LoadingComponent } from '../../../components/loading/loading.component';
 import {
     ViewStateDone,

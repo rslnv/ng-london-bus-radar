@@ -1,0 +1,9 @@
+import { LineListItem } from './line-list-item';
+
+export type StopListItem = {
+  id: string;
+  name: string;
+  stopLetter?: string;
+  towards?: string;
+  lines: LineListItem[];
+};

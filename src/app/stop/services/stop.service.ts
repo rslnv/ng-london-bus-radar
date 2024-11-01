@@ -6,6 +6,7 @@ import { TflService } from '../../services/tfl.service';
 import { StopArrival } from '../models/stop-arrival';
 import { StopDetails } from '../models/stop-details';
 import { StopTimetable, StopTimetableItem } from '../models/stop-timetable';
+import { StopListItem } from '../../models/stop-list-item';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +14,7 @@ import { StopTimetable, StopTimetableItem } from '../models/stop-timetable';
 export class StopService {
   private tflService = inject(TflService);
 
-  find(searchTerm: string): Observable<any[]> {
+  find(searchTerm: string): Observable<StopListItem[]> {
     return this.tflService.findStops(searchTerm).pipe(
       map((response) => response.matches.map((match) => match.id)),
       switchMap((ids) => this.tflService.listStopPoints(ids)),
@@ -22,8 +23,8 @@ export class StopService {
           .map((stop) => {
             return stop.children.map((child) => {
               return {
-                id: child.naptanId,
-                commonName: child.commonName,
+                id: child.id,
+                name: child.commonName,
                 stopLetter: child.stopLetter,
                 lines: child.lines.map((l) => ({ id: l.id, name: l.name })),
                 towards: child.additionalProperties.find(

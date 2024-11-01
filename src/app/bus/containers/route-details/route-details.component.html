@@ -30,7 +30,7 @@
 
   <div class="content">
     @for (stop of data.stops; track stop.id) {
-      <app-bus-route-stop
+      <app-bus-stop
         [stop]="stop"
         [routerLink]="['/stop', stop.id, data.lineId]"
       />

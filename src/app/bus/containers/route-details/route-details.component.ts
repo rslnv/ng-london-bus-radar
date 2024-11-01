@@ -5,23 +5,23 @@ import { MatSuffix } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
 import { combineLatest, switchMap } from 'rxjs';
-import { BusRoutStopComponent } from '../../components/bus-route-stop/bus-route-stop.component';
+import { BusStopComponent } from '../../../components/bus-stop/bus-stop.component';
 import { BusRouteService } from '../../services/bus-route.service';
 
 @Component({
   selector: 'app-bus-route-details',
+  standalone: true,
   templateUrl: './route-details.component.html',
   styleUrl: './route-details.component.scss',
   imports: [
-    JsonPipe,
+    BusStopComponent,
     CommonModule,
+    JsonPipe,
     MatIcon,
     MatSuffix,
     RouterModule,
-    BusRoutStopComponent,
   ],
   providers: [BusRouteService],
-  standalone: true,
 })
 export class RouteDetailsComponent {
   busRouteService = inject(BusRouteService);
