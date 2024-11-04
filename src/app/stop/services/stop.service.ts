@@ -2,11 +2,11 @@ import { inject, Injectable } from '@angular/core';
 import { delay, map, Observable, switchMap, tap } from 'rxjs';
 import { StopPoint } from '../../models/api/stop-point';
 import { TimetableResponse } from '../../models/api/timetable-response';
+import { StopListItem } from '../../models/stop-list-item';
 import { TflService } from '../../services/tfl.service';
 import { StopArrival } from '../models/stop-arrival';
 import { StopDetails } from '../models/stop-details';
 import { StopTimetable, StopTimetableItem } from '../models/stop-timetable';
-import { StopListItem } from '../../models/stop-list-item';
 
 @Injectable({
   providedIn: 'root',
@@ -20,28 +20,37 @@ export class StopService {
       switchMap((ids) => this.tflService.listStopPoints(ids)),
       map((stopPoints) =>
         stopPoints
-          .map((stop) => {
-            return stop.children.map((child) => {
-              return {
-                id: child.id,
-                name: child.commonName,
-                stopLetter: child.stopLetter,
-                lines: child.lines.map((l) => ({ id: l.id, name: l.name })),
-                towards: child.additionalProperties.find(
-                  (ap) => ap.key === 'Towards',
-                )?.value,
-              };
-            });
-          })
-          .flat(),
+          .map((sp) => sp.children)
+          .flat()
+          .filter(StopService.isBusStopPoint)
+          .map(StopService.toStopListItem),
       ),
     );
   }
 
+  private static isBusStopPoint(stopPoint: StopPoint): boolean {
+    const busLines =
+      stopPoint.lineModeGroups.find((lmg) => lmg.modeName === 'bus')
+        ?.lineIdentifier ?? [];
+    return (
+      stopPoint.lines.map((l) => l.id).filter((lid) => busLines.includes(lid))
+        .length > 0
+    );
+  }
+
+  private static toStopListItem = (stop: StopPoint): StopListItem => ({
+    id: stop.id,
+    name: stop.commonName,
+    stopLetter: stop.stopLetter,
+    lines: stop.lines.map((l) => ({ id: l.id, name: l.name })),
+    towards: stop.additionalProperties.find((ap) => ap.key === 'Towards')
+      ?.value,
+  });
+
   details(stopId: string): Observable<StopDetails> {
     return this.tflService.stopPointDetails(stopId).pipe(
       map((details) => {
-        const stopProperties = this.getStopProperties(details, stopId);
+        const stopProperties = StopService.getStopProperties(details, stopId);
         return {
           id: stopId,
           stopLetter: stopProperties.stopLetter,
@@ -53,14 +62,13 @@ export class StopService {
     );
   }
 
-  private getStopProperties(stop: StopPoint, stopId: string) {
+  private static getStopProperties(stop: StopPoint, stopId: string) {
     const child = stop.children.find((s) => s.id === stopId);
 
     return {
       stopLetter: stop.stopLetter ?? child?.stopLetter,
       towards: stop.additionalProperties.find((ap) => ap.key === 'Towards')
         ?.value,
-      // child?.additionalProperties.find((ap) => ap.key === 'Towards')?.value,
     };
   }
 

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { MatFormField } from '@angular/material/form-field';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { RouterModule } from '@angular/router';
 import { iif, Observable, of } from 'rxjs';
@@ -36,7 +36,7 @@ import { StopService } from '../../services/stop.service';
     CommonModule,
     ErrorComponent,
     LoadingComponent,
-    MatFormField,
+    MatFormFieldModule,
     MatInputModule,
     ReactiveFormsModule,
     RouterModule,
@@ -46,10 +46,13 @@ import { StopService } from '../../services/stop.service';
 export class FindStopComponent {
   private stopService = inject(StopService);
 
-  searchControl = new FormControl('', { nonNullable: true });
+  searchControl = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required, Validators.minLength(4)],
+  });
 
   private data$: Observable<VM> = this.searchControl.valueChanges.pipe(
-    filter((searchTerm) => searchTerm.length > 3),
+    filter((_) => this.searchControl.valid),
     debounceTime(500),
     distinctUntilChanged(),
     switchMap((searchTerm) =>

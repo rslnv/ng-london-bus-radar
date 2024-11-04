@@ -1,21 +1,33 @@
-<mat-form-field class="full-width" appearance="outline">
-  <mat-label>Search</mat-label>
-  <input matInput placeholder="stop name" [formControl]="searchControl" />
+<mat-form-field class="full-width">
+  <mat-label>Bus stop</mat-label>
+  <input
+    matInput
+    placeholder="Search for a bus stop..."
+    [formControl]="searchControl"
+  />
+  <mat-hint>by name, SMS code, full postocode</mat-hint>
+  @if (searchControl.hasError('required')) {
+    <mat-error>This field is required</mat-error>
+  } @else if (searchControl.hasError('minlength')) {
+    <mat-error>Keep typing...</mat-error>
+  }
 </mat-form-field>
 
-@let viewModel = viewModel$ | async;
-@if (viewModel) {
-  @if (viewModel.state === 'done') {
-    @for (stop of viewModel.data; track stop.id) {
-      <app-bus-stop [stop]="stop" [routerLink]="['/stop', stop.id]" />
-    } @empty {
-      <p>No results</p>
+<div class="content">
+  @let viewModel = viewModel$ | async;
+  @if (viewModel) {
+    @if (viewModel.state === 'done') {
+      @for (stop of viewModel.data; track stop.id) {
+        <app-bus-stop [stop]="stop" [routerLink]="['/stop', stop.id]" />
+      } @empty {
+        <div>No results</div>
+      }
+    } @else if (viewModel.state === 'idle') {
+      <div>Start typing</div>
+    } @else if (viewModel.state === 'loading') {
+      <app-loading />
+    } @else if (viewModel.state === 'error') {
+      <app-error />
     }
-  } @else if (viewModel.state === 'idle') {
-    <div>Search for a bus stop by name, SMS code</div>
-  } @else if (viewModel.state === 'loading') {
-    <app-loading />
-  } @else if (viewModel.state === 'error') {
-    <app-error />
   }
-}
+</div>
