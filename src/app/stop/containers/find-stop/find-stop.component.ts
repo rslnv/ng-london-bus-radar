@@ -25,6 +25,7 @@ import {
   ViewStateLoading,
 } from '../../../models/view-state';
 import { StopService } from '../../services/stop.service';
+import { StopListItem } from '../../../models/stop-list-item';
 
 @Component({
   selector: 'app-find-stop',
@@ -76,7 +77,7 @@ export class FindStopComponent {
 }
 
 type VM =
-  | ViewStateDone<any[]>
+  | ViewStateDone<StopListItem[]>
   | ViewStateIdle
   | ViewStateLoading
   | ViewStateError;
