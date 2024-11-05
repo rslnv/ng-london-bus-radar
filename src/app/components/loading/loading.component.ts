@@ -3,6 +3,7 @@ import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-loading',
+  standalone: true,
   styles: `
     div {
       display: flex;
@@ -18,6 +19,5 @@ import { MatIconModule } from '@angular/material/icon';
     </div>
   `,
   imports: [MatIconModule],
-  standalone: true,
 })
 export class LoadingComponent {}

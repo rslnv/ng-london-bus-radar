@@ -4,6 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-error',
+  standalone: true,
   styles: `
     div {
       display: flex;
@@ -24,7 +25,6 @@ import { MatIconModule } from '@angular/material/icon';
     </div>
   `,
   imports: [MatButtonModule, MatIconModule],
-  standalone: true,
 })
 export class ErrorComponent {
   @Output() onRefresh = new EventEmitter();
