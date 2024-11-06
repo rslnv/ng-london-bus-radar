@@ -22,15 +22,21 @@ import { RouterModule } from '@angular/router';
     MatListModule,
     MatIconModule,
     AsyncPipe,
-    RouterModule
-  ]
+    RouterModule,
+  ],
 })
 export class SidenavComponent {
   private breakpointObserver = inject(BreakpointObserver);
 
-  isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
+  isHandset$: Observable<boolean> = this.breakpointObserver
+    .observe(Breakpoints.Handset)
     .pipe(
-      map(result => result.matches),
-      shareReplay()
+      map((result) => result.matches),
+      shareReplay(),
     );
+
+  menuItems = [
+    { icon: 'directions_bus', label: 'Stops', link: '/stop' },
+    { icon: 'route', label: 'Routes', link: '/bus' },
+  ];
 }

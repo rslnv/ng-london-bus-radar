@@ -23,16 +23,22 @@
     <!--   <span>My App</span> -->
     <!-- </mat-toolbar> -->
     <mat-nav-list>
-      <a mat-list-item [routerLink]="['stop']" routerLinkActive="active">
-        <mat-icon>directions_bus</mat-icon>
-        Stops
-      </a>
-      <a mat-list-item [routerLink]="['bus']" routerLinkActive="active">
-        <mat-icon>route</mat-icon>
-        Routes
-      </a>
+      @for (item of menuItems; track item) {
+        <a
+          mat-list-item
+          [routerLink]="item.link"
+          routerLinkActive
+          #rla="routerLinkActive"
+          [activated]="rla.isActive"
+          ariaCurrentWhenActive="page"
+        >
+          <mat-icon matListItemIcon [innerHTML]="item.icon" />
+          <span matListItemTitle [innerHTML]="item.label"></span>
+        </a>
+      }
     </mat-nav-list>
   </mat-sidenav>
+
   <mat-sidenav-content>
     <mat-toolbar color="primary">
       @if (isHandset) {
@@ -49,6 +55,6 @@
     </mat-toolbar>
 
     <ng-content />
-    <!-- Add Content Here -->
+
   </mat-sidenav-content>
 </mat-sidenav-container>
