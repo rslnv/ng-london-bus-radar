@@ -5,15 +5,16 @@ import { StopArrivalsComponent } from './stop/containers/arrivals/arrivals.compo
 import { FindStopComponent } from './stop/containers/find-stop/find-stop.component';
 
 export const routes: Routes = [
-  { path: '', component: FindRouteComponent },
+  { path: 'bus/:routeId/:direction', component: RouteDetailsComponent },
   {
     path: 'bus/:routeId',
     redirectTo: ({ params }) => {
       return `bus/${params['routeId']}/outbound`;
     },
   },
-  { path: 'bus/:routeId/:direction', component: RouteDetailsComponent },
+  { path: 'bus', component: FindRouteComponent },
   { path: 'stop/:stopId/:lineId', component: StopArrivalsComponent },
   { path: 'stop/:stopId', component: StopArrivalsComponent },
   { path: 'stop', component: FindStopComponent },
+  { path: '', redirectTo: '/stop', pathMatch: 'full' },
 ];
