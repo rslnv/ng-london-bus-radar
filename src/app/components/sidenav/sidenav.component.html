@@ -1,28 +1,26 @@
-@let isHandset = isHandset$ | async;
-
 <mat-sidenav-container class="sidenav-container">
   <mat-sidenav
     #drawer
     class="sidenav"
+    [class.expanded]="!isHandset() || isExpanded()"
     fixedInViewport
-    [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
-    [mode]="(isHandset$ | async) ? 'over' : 'side'"
-    [opened]="(isHandset$ | async) === false"
+    disableClose
+    [attr.role]="isHandset() ? 'dialog' : 'navigation'"
+    [mode]="isHandset() && isExpanded() ? 'over' : 'side'"
+    opened
   >
-    <!-- <mat-toolbar> -->
-    <!--   @if (!isHandset) { -->
-    <!--     <button -->
-    <!--       mat-icon-button -->
-    <!--       class="example-icon" -->
-    <!--       aria-label="Toggle sidenav" -->
-    <!--       (click)="drawer.toggle()" -->
-    <!--     > -->
-    <!--       <mat-icon aria-label="Side nav toggle icon">menu</mat-icon> -->
-    <!--     </button> -->
-    <!--   } -->
-    <!--   <span>My App</span> -->
-    <!-- </mat-toolbar> -->
     <mat-nav-list>
+      @if (isHandset()) {
+        <a
+          mat-list-item
+          aria-label="Toggle sidenav"
+          (click)="toggleIsExpanded()"
+        >
+          <mat-icon matListItemIcon>menu</mat-icon>
+          <span matListItemTitle>London Bus Radar</span>
+        </a>
+      }
+
       @for (item of menuItems; track item) {
         <a
           mat-list-item
@@ -31,6 +29,7 @@
           #rla="routerLinkActive"
           [activated]="rla.isActive"
           ariaCurrentWhenActive="page"
+          (click)="hideSidenav()"
         >
           <mat-icon matListItemIcon [innerHTML]="item.icon" />
           <span matListItemTitle [innerHTML]="item.label"></span>
@@ -40,21 +39,6 @@
   </mat-sidenav>
 
   <mat-sidenav-content>
-    <mat-toolbar color="primary">
-      @if (isHandset) {
-        <button
-          type="button"
-          aria-label="Toggle sidenav"
-          mat-icon-button
-          (click)="drawer.toggle()"
-        >
-          <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
-        </button>
-      }
-      <span>ng-london-bus-radar</span>
-    </mat-toolbar>
-
     <ng-content />
-
   </mat-sidenav-content>
 </mat-sidenav-container>

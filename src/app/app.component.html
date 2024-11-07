@@ -1,5 +1,8 @@
-<app-sidenav>
-  <main>
-    <router-outlet />
-  </main>
-</app-sidenav>
+@let isHandset = isHandset$ | async;
+@if (isHandset !== null) {
+  <app-sidenav [isHandset]="isHandset">
+    <main>
+      <router-outlet />
+    </main>
+  </app-sidenav>
+}

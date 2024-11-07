@@ -1,13 +1,10 @@
-import { Component, inject } from '@angular/core';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { AsyncPipe } from '@angular/common';
-import { MatToolbarModule } from '@angular/material/toolbar';
+import { Component, input, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
-import { Observable } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
+import { MatListModule } from '@angular/material/list';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterModule } from '@angular/router';
 
 @Component({
@@ -16,27 +13,24 @@ import { RouterModule } from '@angular/router';
   styleUrl: './sidenav.component.scss',
   standalone: true,
   imports: [
-    MatToolbarModule,
-    MatButtonModule,
-    MatSidenavModule,
-    MatListModule,
-    MatIconModule,
     AsyncPipe,
+    MatButtonModule,
+    MatIconModule,
+    MatListModule,
+    MatSidenavModule,
+    MatToolbarModule,
     RouterModule,
   ],
 })
 export class SidenavComponent {
-  private breakpointObserver = inject(BreakpointObserver);
+  isHandset = input.required<boolean>();
+  isExpanded = signal(false);
 
-  isHandset$: Observable<boolean> = this.breakpointObserver
-    .observe(Breakpoints.Handset)
-    .pipe(
-      map((result) => result.matches),
-      shareReplay(),
-    );
+  toggleIsExpanded = () => this.isExpanded.update((value) => !value);
+  hideSidenav = () => this.isExpanded.set(false);
 
   menuItems = [
-    { icon: 'directions_bus', label: 'Stops', link: '/stop' },
-    { icon: 'route', label: 'Routes', link: '/bus' },
+    { icon: 'directions_bus', label: 'Stops', link: ['stop'] },
+    { icon: 'route', label: 'Routes', link: ['bus'] },
   ];
 }

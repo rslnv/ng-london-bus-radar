@@ -3,7 +3,23 @@
 }
 
 .sidenav {
-  width: 200px;
+
+  width: 56px;
+  .mat-mdc-list-item {
+    span {
+      display: none;
+    }
+  }
+
+  &.expanded {
+
+    width: 220px;
+    .mat-mdc-list-item {
+      span {
+        display: block;
+      }
+    }
+  }
 }
 
 .sidenav .mat-toolbar {

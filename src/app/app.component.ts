@@ -1,5 +1,8 @@
-import { Component } from '@angular/core';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { AsyncPipe } from '@angular/common';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { map, Observable, shareReplay, tap } from 'rxjs';
 import { SidenavComponent } from './components/sidenav/sidenav.component';
 
 @Component({
@@ -7,8 +10,16 @@ import { SidenavComponent } from './components/sidenav/sidenav.component';
   standalone: true,
   styleUrl: './app.component.scss',
   templateUrl: './app.component.html',
-  imports: [RouterOutlet, SidenavComponent],
+  imports: [AsyncPipe, RouterOutlet, SidenavComponent],
 })
 export class AppComponent {
-  title = 'ng-london-bus-radar';
+  private breakpointObserver = inject(BreakpointObserver);
+
+  isHandset$: Observable<boolean> = this.breakpointObserver
+    .observe(Breakpoints.Handset)
+    .pipe(
+      map((result) => result.matches),
+      tap((result) => console.log('Is handset', result)),
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
 }
