@@ -9,7 +9,7 @@
     @for (item of viewModel.data; track item.id) {
       <app-bus-route-search-result
         [item]="item"
-        [routerLink]="['bus', item.lineId, item.direction]"
+        [routerLink]="[item.lineId, item.direction]"
       />
     } @empty {
       <p>No results</p>

@@ -16,5 +16,5 @@ export const routes: Routes = [
   { path: 'stop/:stopId/:lineId', component: StopArrivalsComponent },
   { path: 'stop/:stopId', component: StopArrivalsComponent },
   { path: 'stop', component: FindStopComponent },
-  { path: '', redirectTo: '/stop', pathMatch: 'full' },
+  { path: '', redirectTo: 'stop', pathMatch: 'full' },
 ];
