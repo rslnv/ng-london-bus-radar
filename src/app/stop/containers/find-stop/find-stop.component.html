@@ -27,7 +27,7 @@
     } @else if (viewModel.state === 'loading') {
       <app-loading />
     } @else if (viewModel.state === 'error') {
-      <app-error />
+      <app-error [errorData]="viewModel.error" />
     }
   }
 </div>

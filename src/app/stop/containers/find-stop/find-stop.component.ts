@@ -4,13 +4,14 @@ import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { RouterModule } from '@angular/router';
-import { iif, Observable, of } from 'rxjs';
+import { iif, merge, Observable, of } from 'rxjs';
 import {
   catchError,
   debounceTime,
   distinctUntilChanged,
   filter,
   map,
+  shareReplay,
   startWith,
   switchMap,
   tap,
@@ -26,6 +27,7 @@ import {
 } from '../../../models/view-state';
 import { StopService } from '../../services/stop.service';
 import { StopListItem } from '../../../models/stop-list-item';
+import { SearchInput } from '../../models/search-input';
 
 @Component({
   selector: 'app-find-stop',
@@ -49,31 +51,74 @@ export class FindStopComponent {
 
   searchControl = new FormControl('', {
     nonNullable: true,
-    validators: [Validators.required, Validators.minLength(4)],
+    validators: [
+      // Validators.required,
+      Validators.minLength(4),
+    ],
   });
 
-  private data$: Observable<VM> = this.searchControl.valueChanges.pipe(
-    filter((_) => this.searchControl.valid),
-    debounceTime(500),
-    distinctUntilChanged(),
-    switchMap((searchTerm) =>
-      iif(
-        () => !searchTerm,
-        of({ state: 'idle' } as VM),
-        this.stopService.find(searchTerm).pipe(
-          map((data) => ({ state: 'done', data }) as VM),
-          catchError((err) => {
-            console.error('Unable to find bus stops', err);
-            return of({ state: 'error', message: err.message } as VM);
-          }),
-          startWith({ state: 'loading' } as VM),
-        ),
-      ),
-    ),
-    tap((x) => console.log('Current state', x)),
+  private static getSearchInput(searchTerm: string): SearchInput {
+    searchTerm = searchTerm.trim();
+
+    const smsCodeRegExp = /^\d{5}$/;
+
+    if (!searchTerm.length) {
+      return { type: 'empty', term: searchTerm };
+    } else if (smsCodeRegExp.test(searchTerm)) {
+      return { type: 'smsCode', term: searchTerm };
+    } else {
+      return { type: 'name', term: searchTerm };
+    }
+  }
+
+  private input$: Observable<SearchInput> =
+    this.searchControl.valueChanges.pipe(
+      filter((_) => this.searchControl.valid),
+      debounceTime(500),
+      distinctUntilChanged(),
+      map((searchTerm) => FindStopComponent.getSearchInput(searchTerm)),
+      tap(console.log),
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
+
+  private findEmpty$ = this.input$.pipe(
+    filter((input) => input.type === 'empty'),
+    map((_) => ({ state: 'idle' }) as VM),
   );
 
-  viewModel$ = this.data$.pipe(startWith({ state: 'idle' } as VM));
+  private findByName$ = this.input$.pipe(
+    filter((input) => input.type === 'name'),
+    switchMap((input) =>
+      this.stopService.find(input.term).pipe(
+        map((data) => ({ state: 'done', data }) as VM),
+        catchError((err) => {
+          console.error('Unable to find bus stops by name', err);
+          return of({ state: 'error', error: err } as VM);
+        }),
+        startWith({ state: 'loading' } as VM),
+      ),
+    ),
+  );
+
+  private findBySmsCode$ = this.input$.pipe(
+    filter((input) => input.type === 'smsCode'),
+    switchMap((input) =>
+      this.stopService.findBySmsCode(input.term).pipe(
+        map((data) => ({ state: 'done', data }) as VM),
+        catchError((err) => {
+          console.error('Unable to find bus stops by SMS code', err);
+          return of({ state: 'error', error: err } as VM);
+        }),
+        startWith({ state: 'loading' } as VM),
+      ),
+    ),
+  );
+
+  viewModel$ = merge(
+    this.findEmpty$,
+    this.findByName$,
+    this.findBySmsCode$,
+  ).pipe(startWith({ state: 'idle' } as VM));
 }
 
 type VM =

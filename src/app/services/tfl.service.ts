@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { RouteSearchResponse } from '../models/api/route-search-response';
 import { RouteSequence } from '../models/api/route-sequence';
 import { Prediction } from '../models/api/prediction';
@@ -45,9 +45,15 @@ export class TflService {
   }
 
   public listStopPoints(ids: string[]): Observable<StopPoint[]> {
-    return this.httpClient.get<StopPoint[]>(
-      `${this.baseUrl}/StopPoint/${ids.join(',')}`,
-    );
+    return this.httpClient
+      .get<
+        StopPoint | StopPoint[]
+      >(`${this.baseUrl}/StopPoint/${ids.join(',')}`)
+      .pipe(
+        map((stopPoints) =>
+          Array.isArray(stopPoints) ? stopPoints : [stopPoints],
+        ),
+      );
   }
 
   public stopPointDetails(stopId: string): Observable<StopPoint> {

@@ -11,7 +11,7 @@ import { MatchedStop } from '../../models/api/matched-stop';
 export class BusRouteService {
   private tflService = inject(TflService);
 
-  private startsWithSortFn = (
+  private static startsWithSortFn = (
     a: BusRouteSearchResult,
     b: BusRouteSearchResult,
     searchTerm: string,
@@ -54,7 +54,7 @@ export class BusRouteService {
   find(searchTerm: string): Observable<BusRouteSearchResult[]> {
     return this.tflService.findBusRoutes(searchTerm).pipe(
       map(this.mapRouteSearchResponseToDto),
-      map((x) => x.sort((a, b) => this.startsWithSortFn(a, b, searchTerm))),
+      map((x) => x.sort((a, b) => BusRouteService.startsWithSortFn(a, b, searchTerm))),
     );
   }
 

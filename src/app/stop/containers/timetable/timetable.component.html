@@ -5,7 +5,7 @@
       <app-loading />
     }
     @case ('error') {
-      <app-error (onRefresh)="refresherSubject.next()" />
+      <app-error (onRefresh)="refresherSubject.next()" [errorData]="vm.error" />
     }
     @case ('done') {
       @switch (arrivalTimeSpan()) {

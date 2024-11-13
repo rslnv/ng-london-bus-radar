@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { delay, map, Observable, switchMap, tap } from 'rxjs';
+import { map, Observable, switchMap } from 'rxjs';
 import { StopPoint } from '../../models/api/stop-point';
 import { TimetableResponse } from '../../models/api/timetable-response';
 import { StopListItem } from '../../models/stop-list-item';
@@ -27,6 +27,29 @@ export class StopService {
       ),
     );
   }
+
+  findBySmsCode(searchTerm: string): Observable<StopListItem[]> {
+    return this.tflService.findStops(searchTerm).pipe(
+      map((response) => response.matches.map((match) => match.id)),
+      switchMap((ids) =>
+        this.tflService.listStopPoints(ids).pipe(
+          map((stopPoints) =>
+            stopPoints
+              .map((sp) => sp.children)
+              .flat()
+              .sort((a, b) => StopService.stopIdMatchesSortFn(a, b, ids[0]))
+              .map(StopService.toStopListItem),
+          ),
+        ),
+      ),
+    );
+  }
+
+  private static stopIdMatchesSortFn = (
+    a: StopPoint,
+    b: StopPoint,
+    stopId: string,
+  ) => (a.id === stopId ? -1 : b.id === stopId ? 1 : 0);
 
   private static isBusStopPoint(stopPoint: StopPoint): boolean {
     const busLines =

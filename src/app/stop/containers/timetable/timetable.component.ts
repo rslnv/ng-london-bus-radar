@@ -8,9 +8,9 @@ import { catchError, map } from 'rxjs/operators';
 import { ErrorComponent } from '../../../components/error/error.component';
 import { LoadingComponent } from '../../../components/loading/loading.component';
 import {
-    ViewStateDone,
-    ViewStateError,
-    ViewStateLoading,
+  ViewStateDone,
+  ViewStateError,
+  ViewStateLoading,
 } from '../../../models/view-state';
 import { ScheduleComponent } from '../../components/schedule/schedule.component';
 import { ArrivalTimeSpan } from '../../models/arrival-time-span';
@@ -49,7 +49,7 @@ export class TimetableComponent {
         map((data) => ({ state: 'done', data }) as VM),
         catchError((err) => {
           console.error('Unable to find bus routes', err);
-          return of({ state: 'error', message: err.message } as VM);
+          return of({ state: 'error', error: err } as VM);
         }),
         startWith({ state: 'loading' } as VM),
       ),

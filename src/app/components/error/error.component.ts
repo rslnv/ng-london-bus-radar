@@ -1,4 +1,11 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import {
+  Component,
+  computed,
+  EventEmitter,
+  input,
+  Output,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
@@ -15,7 +22,12 @@ import { MatIconModule } from '@angular/material/icon';
   `,
   template: `
     <div>
-      <span>Something went wrong ...</span>
+      @if (errorMessage()) {
+        <span>{{ errorMessage() }}</span>
+      } @else {
+        <span>Something went wrong ...</span>
+      }
+
       @if (onRefresh.observed) {
         <button mat-flat-button (click)="onRefresh.emit()">
           <mat-icon>refresh</mat-icon>
@@ -27,5 +39,10 @@ import { MatIconModule } from '@angular/material/icon';
   imports: [MatButtonModule, MatIconModule],
 })
 export class ErrorComponent {
+  errorData = input.required<HttpErrorResponse>();
   @Output() onRefresh = new EventEmitter();
+
+  errorMessage = computed(
+    () => this.errorData().error?.message ?? this.errorData().message,
+  );
 }

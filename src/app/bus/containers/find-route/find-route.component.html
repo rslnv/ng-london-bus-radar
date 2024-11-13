@@ -1,28 +1,34 @@
 <mat-form-field class="full-width" appearance="outline">
-  <mat-label>Search</mat-label>
-  <input matInput placeholder="route name" [formControl]="searchControl" />
+  <mat-label>Bus route</mat-label>
+  <input
+    matInput
+    placeholder="Search for a bus route..."
+    [formControl]="searchControl"
+  />
+  <mat-hint>by name</mat-hint>
+  @if (searchControl.hasError('required')) {
+    <mat-error>This field is required</mat-error>
+  }
 </mat-form-field>
 
-@let viewModel = viewModel$ | async;
-@if (viewModel) {
-  @if (viewModel.state === 'done') {
-    @for (item of viewModel.data; track item.id) {
-      <app-bus-route-search-result
-        [item]="item"
-        [routerLink]="[item.lineId, item.direction]"
-      />
-    } @empty {
-      <p>No results</p>
-    }
-  } @else if (viewModel.state === 'idle') {
-    <div>Start typing to search for a bus route</div>
-  } @else if (viewModel.state === 'loading') {
-    <app-loading />
-  } @else if (viewModel.state === 'error') {
-    @if (viewModel.message) {
-      <div>Error: {{ viewModel.message }}</div>
-    } @else {
-      <div>Something went wrong</div>
+<div class="content">
+  @let viewModel = viewModel$ | async;
+  @if (viewModel) {
+    @if (viewModel.state === 'done') {
+      @for (item of viewModel.data; track item.id) {
+        <app-bus-route-search-result
+          [item]="item"
+          [routerLink]="[item.lineId, item.direction]"
+        />
+      } @empty {
+        <div>No results</div>
+      }
+    } @else if (viewModel.state === 'idle') {
+      <div>Start typing</div>
+    } @else if (viewModel.state === 'loading') {
+      <app-loading />
+    } @else if (viewModel.state === 'error') {
+      <app-error [errorData]="viewModel.error" />
     }
   }
-}
+</div>

@@ -13,5 +13,5 @@ export type ViewStateIdle = {
 
 export type ViewStateError = {
   state: 'error';
-  message: string | undefined;
+  error: any;
 };
