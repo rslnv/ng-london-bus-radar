@@ -7,6 +7,7 @@ import { Prediction } from '../models/api/prediction';
 import { StopPoint } from '../models/api/stop-point';
 import { TimetableResponse } from '../models/api/timetable-response';
 import { SearchResponse } from '../models/api/search-response';
+import { StopPointsResponse } from '../models/api/stop-points-response';
 
 @Injectable({
   providedIn: 'root',
@@ -31,6 +32,20 @@ export class TflService {
 
     return this.httpClient.get<RouteSequence>(
       `${this.baseUrl}/Line/${routeId}/Route/Sequence/${direction}`,
+      { params },
+    );
+  }
+
+  public findStopsNear(latitude: number, longitude: number, radius: number) {
+    var params = new HttpParams()
+      .set('modes', 'bus')
+      .set('stopTypes', 'NaptanPublicBusCoachTram')
+      .set('lat', latitude)
+      .set('lon', longitude)
+      .set('radius', radius);
+
+    return this.httpClient.get<StopPointsResponse>(
+      `${this.baseUrl}/StopPoint/`,
       { params },
     );
   }

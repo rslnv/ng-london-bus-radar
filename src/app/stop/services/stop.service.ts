@@ -14,7 +14,7 @@ import { StopTimetable, StopTimetableItem } from '../models/stop-timetable';
 export class StopService {
   private tflService = inject(TflService);
 
-  find(searchTerm: string): Observable<StopListItem[]> {
+  findByName(searchTerm: string): Observable<StopListItem[]> {
     return this.tflService.findStops(searchTerm).pipe(
       map((response) => response.matches.map((match) => match.id)),
       switchMap((ids) => this.tflService.listStopPoints(ids)),
@@ -43,6 +43,18 @@ export class StopService {
         ),
       ),
     );
+  }
+
+  findByLocation(
+    latitude: number,
+    longitude: number,
+    radius: number,
+  ): Observable<StopListItem[]> {
+    return this.tflService
+      .findStopsNear(latitude, longitude, radius)
+      .pipe(
+        map((response) => response.stopPoints.map(StopService.toStopListItem)),
+      );
   }
 
   private static stopIdMatchesSortFn = (

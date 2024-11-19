@@ -14,6 +14,7 @@ import {
   shareReplay,
   startWith,
   switchMap,
+  takeUntil,
   tap,
 } from 'rxjs/operators';
 import { BusStopComponent } from '../../../components/bus-stop/bus-stop.component';
@@ -60,15 +61,47 @@ export class FindStopComponent {
   private static getSearchInput(searchTerm: string): SearchInput {
     searchTerm = searchTerm.trim();
 
-    const smsCodeRegExp = /^\d{5}$/;
-
     if (!searchTerm.length) {
-      return { type: 'empty', term: searchTerm };
-    } else if (smsCodeRegExp.test(searchTerm)) {
-      return { type: 'smsCode', term: searchTerm };
-    } else {
-      return { type: 'name', term: searchTerm };
+      return { type: 'empty' };
     }
+
+    const smsCodeRegExp = /^\d{5}$/;
+    if (smsCodeRegExp.test(searchTerm)) {
+      return { type: 'smsCode', smsCode: searchTerm };
+    }
+
+    const coords = FindStopComponent.parseCoords(searchTerm);
+    if (coords !== null) {
+      return {
+        ...coords,
+        type: 'location',
+      };
+    }
+
+    return { type: 'name', name: searchTerm };
+  }
+
+  private static parseCoords(searchTerm: string): {
+    latitude: number;
+    longitude: number;
+  } | null {
+    const segments = searchTerm.split(',');
+
+    if (segments.length !== 2) {
+      return null;
+    }
+
+    const latitude = +segments[0].trim();
+    if (Number.isNaN(latitude)) {
+      return null;
+    }
+
+    const longitude = +segments[1].trim();
+    if (Number.isNaN(longitude)) {
+      return null;
+    }
+
+    return { latitude, longitude };
   }
 
   private input$: Observable<SearchInput> =
@@ -89,7 +122,7 @@ export class FindStopComponent {
   private findByName$ = this.input$.pipe(
     filter((input) => input.type === 'name'),
     switchMap((input) =>
-      this.stopService.find(input.term).pipe(
+      this.stopService.findByName(input.name).pipe(
         map((data) => ({ state: 'done', data }) as VM),
         catchError((err) => {
           console.error('Unable to find bus stops by name', err);
@@ -103,7 +136,7 @@ export class FindStopComponent {
   private findBySmsCode$ = this.input$.pipe(
     filter((input) => input.type === 'smsCode'),
     switchMap((input) =>
-      this.stopService.findBySmsCode(input.term).pipe(
+      this.stopService.findBySmsCode(input.smsCode).pipe(
         map((data) => ({ state: 'done', data }) as VM),
         catchError((err) => {
           console.error('Unable to find bus stops by SMS code', err);
@@ -114,10 +147,27 @@ export class FindStopComponent {
     ),
   );
 
+  private findByLocation$ = this.input$.pipe(
+    filter((input) => input.type === 'location'),
+    switchMap((input) =>
+      this.stopService
+        .findByLocation(input.latitude, input.longitude, 400)
+        .pipe(
+          map((data) => ({ state: 'done', data }) as VM),
+          catchError((err) => {
+            console.error('Unable to find bus stops by SMS code', err);
+            return of({ state: 'error', error: err } as VM);
+          }),
+          startWith({ state: 'loading' } as VM),
+        ),
+    ),
+  );
+
   viewModel$ = merge(
     this.findEmpty$,
     this.findByName$,
     this.findBySmsCode$,
+    this.findByLocation$,
   ).pipe(startWith({ state: 'idle' } as VM));
 }
 
