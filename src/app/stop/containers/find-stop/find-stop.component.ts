@@ -1,34 +1,33 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { RouterModule } from '@angular/router';
-import { iif, merge, Observable, of } from 'rxjs';
+import { merge, of, Subject } from 'rxjs';
 import {
   catchError,
-  debounceTime,
-  distinctUntilChanged,
   filter,
   map,
   shareReplay,
   startWith,
   switchMap,
-  takeUntil,
   tap,
 } from 'rxjs/operators';
 import { BusStopComponent } from '../../../components/bus-stop/bus-stop.component';
 import { ErrorComponent } from '../../../components/error/error.component';
 import { LoadingComponent } from '../../../components/loading/loading.component';
+import { StopListItem } from '../../../models/stop-list-item';
 import {
   ViewStateDone,
   ViewStateError,
   ViewStateIdle,
   ViewStateLoading,
 } from '../../../models/view-state';
-import { StopService } from '../../services/stop.service';
-import { StopListItem } from '../../../models/stop-list-item';
+import { SearchInputComponent } from '../../components/search-input/search-input.component';
 import { SearchInput } from '../../models/search-input';
+import { StopService } from '../../services/stop.service';
+import { LocationService } from '../../../services/location.service';
 
 @Component({
   selector: 'app-find-stop',
@@ -44,75 +43,19 @@ import { SearchInput } from '../../models/search-input';
     MatInputModule,
     ReactiveFormsModule,
     RouterModule,
+    SearchInputComponent,
   ],
   providers: [StopService],
 })
 export class FindStopComponent {
   private stopService = inject(StopService);
+  private locationService = inject(LocationService);
 
-  searchControl = new FormControl('', {
-    nonNullable: true,
-    validators: [
-      // Validators.required,
-      Validators.minLength(4),
-    ],
-  });
-
-  private static getSearchInput(searchTerm: string): SearchInput {
-    searchTerm = searchTerm.trim();
-
-    if (!searchTerm.length) {
-      return { type: 'empty' };
-    }
-
-    const smsCodeRegExp = /^\d{5}$/;
-    if (smsCodeRegExp.test(searchTerm)) {
-      return { type: 'smsCode', smsCode: searchTerm };
-    }
-
-    const coords = FindStopComponent.parseCoords(searchTerm);
-    if (coords !== null) {
-      return {
-        ...coords,
-        type: 'location',
-      };
-    }
-
-    return { type: 'name', name: searchTerm };
-  }
-
-  private static parseCoords(searchTerm: string): {
-    latitude: number;
-    longitude: number;
-  } | null {
-    const segments = searchTerm.split(',');
-
-    if (segments.length !== 2) {
-      return null;
-    }
-
-    const latitude = +segments[0].trim();
-    if (Number.isNaN(latitude)) {
-      return null;
-    }
-
-    const longitude = +segments[1].trim();
-    if (Number.isNaN(longitude)) {
-      return null;
-    }
-
-    return { latitude, longitude };
-  }
-
-  private input$: Observable<SearchInput> =
-    this.searchControl.valueChanges.pipe(
-      filter((_) => this.searchControl.valid),
-      debounceTime(500),
-      distinctUntilChanged(),
-      map((searchTerm) => FindStopComponent.getSearchInput(searchTerm)),
-      tap(console.log),
-      shareReplay({ bufferSize: 1, refCount: true }),
-    );
+  inputSubject = new Subject<SearchInput>();
+  private input$ = this.inputSubject.pipe(
+    tap(console.log),
+    shareReplay({ bufferSize: 1, refCount: true }),
+  );
 
   private findEmpty$ = this.input$.pipe(
     filter((input) => input.type === 'empty'),
@@ -147,8 +90,8 @@ export class FindStopComponent {
     ),
   );
 
-  private findByLocation$ = this.input$.pipe(
-    filter((input) => input.type === 'location'),
+  private findByCoordinates$ = this.input$.pipe(
+    filter((input) => input.type === 'coordinates'),
     switchMap((input) =>
       this.stopService
         .findByLocation(input.latitude, input.longitude, 400)
@@ -163,12 +106,31 @@ export class FindStopComponent {
     ),
   );
 
+  private findByCurrentPosition$ = this.input$.pipe(
+    filter((input) => input.type === 'currentPosition'),
+    switchMap((_) =>
+      this.locationService.currentPostition.pipe(
+        switchMap((position) =>
+          this.stopService.findByLocation(
+            position.coords.latitude,
+            position.coords.longitude,
+            200,
+          ),
+        ),
+        map((data) => ({ state: 'done', data }) as VM),
+        catchError((err) => of({ state: 'error', error: err } as VM)),
+        startWith({ state: 'loading' } as VM),
+      ),
+    ),
+  );
+
   viewModel$ = merge(
     this.findEmpty$,
     this.findByName$,
     this.findBySmsCode$,
-    this.findByLocation$,
-  ).pipe(startWith({ state: 'idle' } as VM));
+    this.findByCoordinates$,
+    this.findByCurrentPosition$,
+  ).pipe(tap(console.log), startWith({ state: 'idle' } as VM));
 }
 
 type VM =

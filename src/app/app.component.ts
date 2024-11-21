@@ -19,7 +19,7 @@ export class AppComponent {
     .observe(Breakpoints.Handset)
     .pipe(
       map((result) => result.matches),
-      tap((result) => console.log('Is handset', result)),
+      // tap((result) => console.log('Is handset', result)),
       shareReplay({ bufferSize: 1, refCount: true }),
     );
 }

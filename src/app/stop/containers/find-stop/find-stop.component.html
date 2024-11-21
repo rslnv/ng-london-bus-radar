@@ -1,17 +1,4 @@
-<mat-form-field class="full-width" appearance="outline">
-  <mat-label>Bus stop</mat-label>
-  <input
-    matInput
-    placeholder="Search for a bus stop..."
-    [formControl]="searchControl"
-  />
-  <mat-hint>by name, SMS code, full postocode</mat-hint>
-  @if (searchControl.hasError('required')) {
-    <mat-error>This field is required</mat-error>
-  } @else if (searchControl.hasError('minlength')) {
-    <mat-error>Keep typing...</mat-error>
-  }
-</mat-form-field>
+<app-search-input (searchInput)="inputSubject.next($event)" />
 
 <div class="content">
   @let viewModel = viewModel$ | async;
