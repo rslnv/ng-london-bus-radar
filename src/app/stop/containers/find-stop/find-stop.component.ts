@@ -45,7 +45,6 @@ import { LocationService } from '../../../services/location.service';
     RouterModule,
     SearchInputComponent,
   ],
-  providers: [StopService],
 })
 export class FindStopComponent {
   private stopService = inject(StopService);

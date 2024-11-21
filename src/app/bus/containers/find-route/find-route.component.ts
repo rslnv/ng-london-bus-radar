@@ -41,7 +41,6 @@ import { ErrorComponent } from '../../../components/error/error.component';
     LoadingComponent,
     ErrorComponent,
   ],
-  providers: [BusRouteService],
 })
 export class FindRouteComponent {
   busRouteService = inject(BusRouteService);

@@ -1,4 +1,4 @@
-import { inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { TflService } from '../../services/tfl.service';
 import { map } from 'rxjs/operators';
 import { RouteSearchResponse } from '../../models/api/route-search-response';
@@ -8,6 +8,7 @@ import { RouteSequence } from '../../models/api/route-sequence';
 import { BusRouteDetailsResult } from '../models/bus-route-details-result';
 import { MatchedStop } from '../../models/api/matched-stop';
 
+@Injectable({ providedIn: 'root' })
 export class BusRouteService {
   private tflService = inject(TflService);
 
@@ -54,7 +55,9 @@ export class BusRouteService {
   find(searchTerm: string): Observable<BusRouteSearchResult[]> {
     return this.tflService.findBusRoutes(searchTerm).pipe(
       map(this.mapRouteSearchResponseToDto),
-      map((x) => x.sort((a, b) => BusRouteService.startsWithSortFn(a, b, searchTerm))),
+      map((x) =>
+        x.sort((a, b) => BusRouteService.startsWithSortFn(a, b, searchTerm)),
+      ),
     );
   }
 

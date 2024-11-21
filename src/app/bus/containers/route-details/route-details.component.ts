@@ -21,7 +21,6 @@ import { BusRouteService } from '../../services/bus-route.service';
     MatSuffix,
     RouterModule,
   ],
-  providers: [BusRouteService],
 })
 export class RouteDetailsComponent {
   busRouteService = inject(BusRouteService);
