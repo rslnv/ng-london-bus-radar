@@ -20,4 +20,5 @@ Focus is on London buses:
 - [x] Find bus stop near coordinates
 - [x] Find bus stop near current location
 - [ ] Find bus stop near postcode
+- [ ] Specifying search radius for stops
 - [ ] Save stop to favourites
