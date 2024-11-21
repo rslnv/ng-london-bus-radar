@@ -14,9 +14,10 @@ Focus is on London buses:
 - [x] View route details
 - [x] Bus stop details
 - [x] Live arrivals
-- [x] Timetables
+- [ ] Timetables (night buses need fixing)
 - [x] Find bus stop by name
-- [ ] Find bus stop by SMS code
-- [ ] Find bus stop near coordinates
+- [x] Find bus stop by SMS code
+- [x] Find bus stop near coordinates
+- [x] Find bus stop near current location
 - [ ] Find bus stop near postcode
 - [ ] Save stop to favourites
