@@ -1,5 +1,9 @@
 <app-search-input (searchInput)="inputSubject.next($event)" />
 
+@if (showRadiusControl$ | async) {
+  <app-search-radius (searchRadius)="radiusSubject.next($event)" />
+}
+
 <div class="content">
   @let viewModel = viewModel$ | async;
   @if (viewModel) {

@@ -16,7 +16,12 @@ export class StopService {
 
   findByName(searchTerm: string): Observable<StopListItem[]> {
     return this.tflService.findStops(searchTerm).pipe(
-      map((response) => response.matches.map((match) => match.id)),
+      map((response) => {
+        if (!response.matches.length) {
+          throw new Error('Bus stop not found');
+        }
+        return response.matches.map((match) => match.id);
+      }),
       switchMap((ids) => this.tflService.listStopPoints(ids)),
       map((stopPoints) =>
         stopPoints
