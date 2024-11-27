@@ -28,6 +28,7 @@ import { SearchInputComponent } from '../../components/search-input/search-input
 import { SearchInput } from '../../models/search-input';
 import { StopService } from '../../services/stop.service';
 import { LocationService } from '../../../services/location.service';
+import { PostcodeService } from '../../../services/postcode.service';
 
 @Component({
   selector: 'app-find-stop',
@@ -49,6 +50,7 @@ import { LocationService } from '../../../services/location.service';
 export class FindStopComponent {
   private stopService = inject(StopService);
   private locationService = inject(LocationService);
+  private postcodeService = inject(PostcodeService);
 
   inputSubject = new Subject<SearchInput>();
   private input$ = this.inputSubject.pipe(
@@ -84,6 +86,24 @@ export class FindStopComponent {
           console.error('Unable to find bus stops by SMS code', err);
           return of({ state: 'error', error: err } as VM);
         }),
+        startWith({ state: 'loading' } as VM),
+      ),
+    ),
+  );
+
+  private findByPostcode$ = this.input$.pipe(
+    filter((input) => input.type === 'postcode'),
+    switchMap((input) =>
+      this.postcodeService.find(input.postcode).pipe(
+        switchMap((postcode) =>
+          this.stopService.findByLocation(
+            postcode.result.latitude,
+            postcode.result.longitude,
+            200,
+          ),
+        ),
+        map((data) => ({ state: 'done', data }) as VM),
+        catchError((err) => of({ state: 'error', error: err } as VM)),
         startWith({ state: 'loading' } as VM),
       ),
     ),
@@ -127,6 +147,7 @@ export class FindStopComponent {
     this.findEmpty$,
     this.findByName$,
     this.findBySmsCode$,
+    this.findByPostcode$,
     this.findByCoordinates$,
     this.findByCurrentPosition$,
   ).pipe(tap(console.log), startWith({ state: 'idle' } as VM));

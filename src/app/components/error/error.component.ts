@@ -43,6 +43,9 @@ export class ErrorComponent {
   @Output() onRefresh = new EventEmitter();
 
   errorMessage = computed(
-    () => this.errorData().error?.message ?? this.errorData().message,
+    () =>
+      this.errorData().error?.message ??
+      this.errorData().error?.error ??
+      this.errorData().message,
   );
 }

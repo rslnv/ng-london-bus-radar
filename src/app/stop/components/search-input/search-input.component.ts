@@ -34,7 +34,8 @@ import { SearchInput } from '../../models/search-input';
         <mat-icon>my_location</mat-icon>
       </button>
 
-      <mat-hint>by name, SMS code, full postocode</mat-hint>
+      <mat-hint>by name, SMS code, postocode or coords</mat-hint>
+
       @if (searchControl.hasError('required')) {
         <mat-error>This field is required</mat-error>
       } @else if (searchControl.hasError('minlength')) {
@@ -88,6 +89,11 @@ export class SearchInputComponent {
     const smsCodeRegExp = /^\d{5}$/;
     if (smsCodeRegExp.test(searchTerm)) {
       return { type: 'smsCode', smsCode: searchTerm };
+    }
+
+    const postcodeRegExp = /^[A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2}$/i;
+    if (postcodeRegExp.test(searchTerm)) {
+      return { type: 'postcode', postcode: searchTerm };
     }
 
     const coords = SearchInputComponent.parseCoords(searchTerm);

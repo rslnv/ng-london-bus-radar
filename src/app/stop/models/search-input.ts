@@ -2,6 +2,7 @@ export type SearchInput =
   | SearchInputEmpty
   | SearchInputName
   | SearchInputSmsCode
+  | SearchInputPostcode
   | SearchInputCoordinates
   | SearchInputCurrentPosition;
 
@@ -17,6 +18,11 @@ export type SearchInputName = {
 export type SearchInputSmsCode = {
   type: 'smsCode';
   smsCode: string;
+};
+
+export type SearchInputPostcode = {
+  type: 'postcode';
+  postcode: string;
 };
 
 export type SearchInputCoordinates = {
