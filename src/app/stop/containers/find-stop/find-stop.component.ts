@@ -37,7 +37,7 @@ import {
 import { LocationService } from '../../../services/location.service';
 import { PostcodeService } from '../../../services/postcode.service';
 import { SearchInputComponent } from '../../components/search-input/search-input.component';
-import { SearchRadiusComponent } from '../../components/search-input/search-radius.component';
+import { SearchRadiusComponent } from '../../components/search-radius/search-radius.component';
 import { SearchInput } from '../../models/search-input';
 import { StopService } from '../../services/stop.service';
 
