@@ -65,9 +65,9 @@ export class SearchInputComponent {
   constructor() {
     this.searchControl.valueChanges
       .pipe(
-        filter((_) => this.searchControl.valid),
         debounceTime(500),
         distinctUntilChanged(),
+        filter((_) => this.searchControl.valid),
         map((searchTerm) => SearchInputComponent.getSearchInput(searchTerm)),
         tap((value) => this.searchInput.emit(value)),
         takeUntilDestroyed(),

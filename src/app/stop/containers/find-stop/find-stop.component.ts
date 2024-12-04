@@ -4,10 +4,20 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { RouterModule } from '@angular/router';
-import { combineLatest, merge, of, Subject } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  defer,
+  EMPTY,
+  Observable,
+  of,
+  OperatorFunction,
+  pipe,
+  Subject,
+} from 'rxjs';
 import {
   catchError,
-  filter,
+  distinctUntilChanged,
   map,
   shareReplay,
   startWith,
@@ -24,12 +34,12 @@ import {
   ViewStateIdle,
   ViewStateLoading,
 } from '../../../models/view-state';
-import { SearchInputComponent } from '../../components/search-input/search-input.component';
-import { SearchInput } from '../../models/search-input';
-import { StopService } from '../../services/stop.service';
 import { LocationService } from '../../../services/location.service';
 import { PostcodeService } from '../../../services/postcode.service';
+import { SearchInputComponent } from '../../components/search-input/search-input.component';
 import { SearchRadiusComponent } from '../../components/search-input/search-radius.component';
+import { SearchInput } from '../../models/search-input';
+import { StopService } from '../../services/stop.service';
 
 @Component({
   selector: 'app-find-stop',
@@ -55,7 +65,7 @@ export class FindStopComponent {
   private postcodeService = inject(PostcodeService);
 
   inputSubject = new Subject<SearchInput>();
-  private input$ = this.inputSubject.pipe(
+  private input$: Observable<SearchInput> = this.inputSubject.pipe(
     tap(console.log),
     shareReplay({ bufferSize: 1, refCount: true }),
   );
@@ -66,114 +76,85 @@ export class FindStopComponent {
     ),
   );
 
-  radiusSubject = new Subject<number>();
-  private radius$ = this.radiusSubject.pipe(tap(console.log));
-
-  private findEmpty$ = this.input$.pipe(
-    filter((input) => input.type === 'empty'),
-    map((_) => ({ state: 'idle' }) as VM),
+  radiusSubject = new BehaviorSubject<number>(0);
+  private radius$ = this.radiusSubject.pipe(
+    distinctUntilChanged(),
+    tap(console.log),
   );
 
-  private findByName$ = this.input$.pipe(
-    filter((input) => input.type === 'name'),
-    switchMap((input) =>
-      this.stopService.findByName(input.name).pipe(
-        map((data) => ({ state: 'done', data }) as VM),
-        catchError((err) => of({ state: 'error', error: err } as VM)),
-        startWith({ state: 'loading' } as VM),
-      ),
-    ),
-  );
+  private mapToVM = (): OperatorFunction<StopListItem[], VM> =>
+    pipe(
+      map((data) => ({ state: 'done', data }) as VM),
+      catchError((err) => of({ state: 'error', error: err } as VM)),
+      startWith({ state: 'loading' } as VM),
+    );
 
-  private findBySmsCode$ = this.input$.pipe(
-    filter((input) => input.type === 'smsCode'),
-    switchMap((input) =>
-      this.stopService.findBySmsCode(input.smsCode).pipe(
-        map((data) => ({ state: 'done', data }) as VM),
-        catchError((err) => of({ state: 'error', error: err } as VM)),
-        startWith({ state: 'loading' } as VM),
-      ),
-    ),
-  );
+  private findByName = (name: string): Observable<VM> =>
+    this.stopService.findByName(name).pipe(this.mapToVM());
 
-  private findByPostcode$ = this.input$.pipe(
-    filter((input) => input.type === 'postcode'),
-    switchMap((input) =>
-      this.postcodeService.find(input.postcode).pipe(
-        switchMap((postcode) =>
-          this.stopService.findByLocation(
-            postcode.result.latitude,
-            postcode.result.longitude,
-            200,
-          ),
+  private findBySmsCode = (smsCode: string): Observable<VM> =>
+    this.stopService.findBySmsCode(smsCode).pipe(this.mapToVM());
+
+  private findByPostcode = (postcode: string, radius: number): Observable<VM> =>
+    this.postcodeService.find(postcode).pipe(
+      switchMap((postcode) =>
+        this.stopService.findByLocation(
+          postcode.result.latitude,
+          postcode.result.longitude,
+          radius,
         ),
-        map((data) => ({ state: 'done', data }) as VM),
-        catchError((err) => of({ state: 'error', error: err } as VM)),
-        startWith({ state: 'loading' } as VM),
       ),
-    ),
-  );
+      this.mapToVM(),
+    );
 
-  private findByCoordinates$ = this.input$.pipe(
-    filter((input) => input.type === 'coordinates'),
-    switchMap((input) =>
-      this.stopService
-        .findByLocation(input.latitude, input.longitude, 400)
-        .pipe(
-          map((data) => ({ state: 'done', data }) as VM),
-          catchError((err) => of({ state: 'error', error: err } as VM)),
-          startWith({ state: 'loading' } as VM),
+  private findByCoordinates = (
+    latitude: number,
+    longitude: number,
+    radius: number,
+  ) => this.stopService.findByLocation(latitude, longitude, radius);
+
+  private findByCurrentPosition = (radius: number) =>
+    this.locationService.currentPostition.pipe(
+      switchMap((position) =>
+        this.stopService.findByLocation(
+          position.coords.latitude,
+          position.coords.longitude,
+          radius,
         ),
-    ),
-  );
+      ),
+      this.mapToVM(),
+    );
 
-  private findByCurrentPosition$ = combineLatest({
+  viewModel$ = combineLatest({
     input: this.input$,
     radius: this.radius$,
   }).pipe(
-    filter((query) => query.input.type === 'currentPosition'),
     switchMap((query) =>
-      this.locationService.currentPostition.pipe(
-        switchMap((position) =>
-          this.stopService.findByLocation(
-            position.coords.latitude,
-            position.coords.longitude,
+      defer(() => {
+        if (query.input.type === 'empty') {
+          return of({ state: 'idle' } as VM);
+        } else if (query.input.type === 'name') {
+          return this.findByName(query.input.name);
+        } else if (query.input.type === 'smsCode') {
+          return this.findBySmsCode(query.input.smsCode);
+        } else if (query.input.type === 'postcode' && query.radius) {
+          return this.findByPostcode(query.input.postcode, query.radius);
+        } else if (query.input.type === 'coordinates' && query.radius) {
+          return this.findByCoordinates(
+            query.input.latitude,
+            query.input.longitude,
             query.radius,
-          ),
-        ),
-        map((data) => ({ state: 'done', data }) as VM),
-        catchError((err) => of({ state: 'error', error: err } as VM)),
-        startWith({ state: 'loading' } as VM),
-      ),
+          );
+        } else if (query.input.type === 'currentPosition' && query.radius) {
+          return this.findByCurrentPosition(query.radius);
+        } else {
+          return EMPTY;
+        }
+      }),
     ),
+    tap(console.log),
+    startWith({ state: 'idle' } as VM),
   );
-
-  // private findByCurrentPosition$ = this.input$.pipe(
-  //   filter((input) => input.type === 'currentPosition'),
-  //   switchMap((_) =>
-  //     this.locationService.currentPostition.pipe(
-  //       switchMap((position) =>
-  //         this.stopService.findByLocation(
-  //           position.coords.latitude,
-  //           position.coords.longitude,
-  //           200,
-  //         ),
-  //       ),
-  //       map((data) => ({ state: 'done', data }) as VM),
-  //       catchError((err) => of({ state: 'error', error: err } as VM)),
-  //       startWith({ state: 'loading' } as VM),
-  //     ),
-  //   ),
-  // );
-
-  viewModel$ = merge(
-    this.findEmpty$,
-    this.findByName$,
-    this.findBySmsCode$,
-    this.findByPostcode$,
-    this.findByCoordinates$,
-    this.findByCurrentPosition$,
-  ).pipe(tap(console.log), startWith({ state: 'idle' } as VM));
 }
 
 type VM =
