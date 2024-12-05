@@ -1,4 +1,3 @@
-import { AsyncPipe } from '@angular/common';
 import { Component, output } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -10,7 +9,6 @@ import { SearchInput } from '../../models/search-input';
 
 @Component({
   selector: 'app-search-input',
-  standalone: true,
   styles: `
     * {
       width: 100%;
@@ -43,13 +41,7 @@ import { SearchInput } from '../../models/search-input';
       }
     </mat-form-field>
   `,
-  imports: [
-    ReactiveFormsModule,
-    MatInputModule,
-    MatIconButton,
-    MatIcon,
-    AsyncPipe,
-  ],
+  imports: [ReactiveFormsModule, MatInputModule, MatIconButton, MatIcon],
 })
 export class SearchInputComponent {
   searchInput = output<SearchInput>();

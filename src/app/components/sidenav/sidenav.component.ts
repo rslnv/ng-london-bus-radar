@@ -1,4 +1,3 @@
-import { AsyncPipe } from '@angular/common';
 import { Component, input, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,9 +10,7 @@ import { RouterModule } from '@angular/router';
   selector: 'app-sidenav',
   templateUrl: './sidenav.component.html',
   styleUrl: './sidenav.component.scss',
-  standalone: true,
   imports: [
-    AsyncPipe,
     MatButtonModule,
     MatIconModule,
     MatListModule,

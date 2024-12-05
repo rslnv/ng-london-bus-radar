@@ -7,7 +7,6 @@ import { SidenavComponent } from './components/sidenav/sidenav.component';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   styleUrl: './app.component.scss',
   templateUrl: './app.component.html',
   imports: [AsyncPipe, RouterOutlet, SidenavComponent],

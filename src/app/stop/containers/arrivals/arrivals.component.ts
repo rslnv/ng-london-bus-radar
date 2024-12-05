@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { map, switchMap, tap } from 'rxjs';
 import { BusStopComponent } from '../../../components/bus-stop/bus-stop.component';
-import { TimeToStationPipe } from '../../../pipes/time-to-station.pipe';
 import { BusArrivalComponent } from '../../components/bus-arrival/bus-arrival.component';
 import { LineFilterComponent } from '../../components/line-filter/line-filter.components';
 import { ArrivalTimeSpan } from '../../models/arrival-time-span';
@@ -20,13 +19,11 @@ import { TimetableComponent } from '../timetable/timetable.component';
     CommonModule,
     FormsModule,
     LineFilterComponent,
-    TimeToStationPipe,
     TimetableComponent,
     MatButtonToggleModule,
     BusStopComponent,
     BusArrivalComponent,
   ],
-  standalone: true,
 })
 export class StopArrivalsComponent {
   private stopService = inject(StopService);

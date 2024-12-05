@@ -29,7 +29,6 @@ import { StopService } from '../../services/stop.service';
     LoadingComponent,
     ErrorComponent,
   ],
-  standalone: true,
 })
 export class TimetableComponent {
   private stopService = inject(StopService);

@@ -4,7 +4,6 @@ import { TimeToStationPipe } from '../../../pipes/time-to-station.pipe';
 
 @Component({
   selector: 'app-bus-arrival',
-  standalone: true,
   styles: `
     .card {
       width: 100%;

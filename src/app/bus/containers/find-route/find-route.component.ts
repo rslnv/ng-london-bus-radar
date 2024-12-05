@@ -30,7 +30,6 @@ import { ErrorComponent } from '../../../components/error/error.component';
   selector: 'app-bus-find-route',
   templateUrl: './find-route.component.html',
   styleUrl: './find-route.component.scss',
-  standalone: true,
   imports: [
     MatInputModule,
     MatFormField,

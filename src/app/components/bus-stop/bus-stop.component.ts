@@ -5,7 +5,6 @@ import { StopListItem } from '../../models/stop-list-item';
 
 @Component({
   selector: 'app-bus-stop',
-  standalone: true,
   styleUrl: './bus-stop.component.scss',
   templateUrl: './bus-stop.component.html',
   imports: [MatIcon, CommonModule],

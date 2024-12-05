@@ -43,7 +43,6 @@ import { StopService } from '../../services/stop.service';
 
 @Component({
   selector: 'app-find-stop',
-  standalone: true,
   templateUrl: './find-stop.component.html',
   styleUrl: './find-stop.component.scss',
   imports: [

@@ -11,7 +11,6 @@ import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-error',
-  standalone: true,
   styles: `
     div {
       display: flex;

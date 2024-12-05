@@ -29,7 +29,6 @@ import { Journey } from '../../models/journey';
     }
   `,
   imports: [CommonModule],
-  standalone: true,
 })
 export class ScheduleComponent {
   journeys = input.required<Journey[]>();

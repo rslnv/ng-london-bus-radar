@@ -2,11 +2,10 @@ import { Component, output } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatSliderModule } from '@angular/material/slider';
-import { debounceTime, distinctUntilChanged, filter, map, tap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, tap } from 'rxjs';
 
 @Component({
   selector: 'app-search-radius',
-  standalone: true,
   styles: `
     .container {
       margin: 1em 1em 0 1em;
