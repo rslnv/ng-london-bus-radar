@@ -47,7 +47,7 @@ export class FindRouteComponent {
 
   searchControl = new FormControl('', {
     nonNullable: true,
-    validators: [Validators.required],
+    // validators: [Validators.required],
   });
 
   private data$: Observable<VM> = this.searchControl.valueChanges.pipe(
