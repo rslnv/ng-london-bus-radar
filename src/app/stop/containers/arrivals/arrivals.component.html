@@ -1,17 +1,7 @@
 @let details = details$ | async;
 @if (details) {
   <div class="header">
-    <p>{{ details.commonName }}</p>
-
-    <div class="stop-legend">
-      <div class="stop-letter">
-        {{ details.stopLetter }}
-      </div>
-
-      @if (details.towards) {
-        <div class="towards">towards {{ details.towards }}</div>
-      }
-    </div>
+    <app-bus-stop [stop]="details" [hideLines]="true" />
 
     <app-line-filter
       [lines]="details.lines"
@@ -39,16 +29,7 @@
 @if (arrivals && (!lineFilter() || arrivalTimeSpan() === 'live')) {
   <div class="content">
     @for (arrival of arrivals; track arrival.id; let last = $last) {
-      <div>
-        <div>{{ arrival.lineName }}</div>
-        <div>{{ arrival.destinationName }}</div>
-        <div>
-          <b>{{ arrival.timeToStation | timeToStation }} </b>
-        </div>
-      </div>
-      @if (!last) {
-        <hr />
-      }
+      <app-bus-arrival [item]="arrival" />
     }
   </div>
 } @else if (lineFilter()) {

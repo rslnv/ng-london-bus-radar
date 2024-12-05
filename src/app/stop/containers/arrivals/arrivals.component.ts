@@ -1,14 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Component, inject, input, signal, effect } from '@angular/core';
+import { Component, inject, input, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
+import { FormsModule } from '@angular/forms';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { map, switchMap, tap } from 'rxjs';
+import { BusStopComponent } from '../../../components/bus-stop/bus-stop.component';
 import { TimeToStationPipe } from '../../../pipes/time-to-station.pipe';
+import { BusArrivalComponent } from '../../components/bus-arrival/bus-arrival.component';
 import { LineFilterComponent } from '../../components/line-filter/line-filter.components';
+import { ArrivalTimeSpan } from '../../models/arrival-time-span';
 import { StopService } from '../../services/stop.service';
 import { TimetableComponent } from '../timetable/timetable.component';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { ArrivalTimeSpan } from '../../models/arrival-time-span';
 
 @Component({
   selector: 'app-stop-arrivals',
@@ -21,6 +23,8 @@ import { ArrivalTimeSpan } from '../../models/arrival-time-span';
     TimeToStationPipe,
     TimetableComponent,
     MatButtonToggleModule,
+    BusStopComponent,
+    BusArrivalComponent,
   ],
   standalone: true,
 })

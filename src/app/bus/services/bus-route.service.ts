@@ -82,14 +82,14 @@ export class BusRouteService {
 
     const stops = stopPointsOrdered.map((sp) => ({
       id: sp.id,
-      name: sp.name,
+      commonName: sp.name,
       stopLetter: sp.stopLetter,
       lines: sp.lines
         .filter((l) => l.id !== model.lineId)
         .map((l) => ({ id: l.id, name: l.name })),
     }));
-    const from = !stops ? '' : stops[0].name;
-    const to = !stops ? '' : stops[stops.length - 1].name;
+    const from = !stops ? '' : stops[0].commonName;
+    const to = !stops ? '' : stops[stops.length - 1].commonName;
 
     const detailsResult: BusRouteDetailsResult = {
       lineId: model.lineId,

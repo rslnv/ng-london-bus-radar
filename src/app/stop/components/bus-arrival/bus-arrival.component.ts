@@ -1,8 +1,9 @@
 import { Component, input } from '@angular/core';
-import { BusRouteSearchResult } from '../../models/bus-route-search-result';
+import { StopArrival } from '../../models/stop-arrival';
+import { TimeToStationPipe } from '../../../pipes/time-to-station.pipe';
 
 @Component({
-  selector: 'app-bus-route-search-result',
+  selector: 'app-bus-arrival',
   standalone: true,
   styles: `
     .card {
@@ -27,6 +28,11 @@ import { BusRouteSearchResult } from '../../models/bus-route-search-result';
         font-weight: bold;
         word-break: break-word;
       }
+      .arrival {
+        font-weight: bold;
+        margin-left: auto;
+        min-width: 60px;
+      }
     }
   `,
   template: `
@@ -36,11 +42,15 @@ import { BusRouteSearchResult } from '../../models/bus-route-search-result';
       </div>
       <div class="content">
         <small>towards</small>
-        <div class="destination">{{ item().destination }}</div>
+        <div class="destination">{{ item().destinationName }}</div>
+      </div>
+      <div class="arrival">
+        {{ item().timeToStation | timeToStation }}
       </div>
     </div>
   `,
+  imports: [TimeToStationPipe],
 })
-export class BusRouteSearchResultComponent {
-  item = input.required<BusRouteSearchResult>();
+export class BusArrivalComponent {
+  item = input.required<StopArrival>();
 }

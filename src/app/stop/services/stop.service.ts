@@ -80,7 +80,7 @@ export class StopService {
 
   private static toStopListItem = (stop: StopPoint): StopListItem => ({
     id: stop.id,
-    name: stop.commonName,
+    commonName: stop.commonName,
     stopLetter: stop.stopLetter,
     lines: stop.lines.map((l) => ({ id: l.id, name: l.name })),
     towards: stop.additionalProperties.find((ap) => ap.key === 'Towards')
@@ -115,25 +115,24 @@ export class StopService {
   arrivals(stopId: string): Observable<StopArrival[]> {
     return this.tflService.stopPointArrivals(stopId).pipe(
       map((predictions) =>
-        predictions.map((p) => ({
-          id: p.tripId,
-          lineId: p.lineId,
-          lineName: p.lineName,
-          destinationName: p.destinationName,
-          timeToStation: p.timeToStation,
-        })),
+        predictions
+          .map((p) => ({
+            id: p.tripId,
+            lineId: p.lineId,
+            lineName: p.lineName,
+            destinationName: p.destinationName,
+            timeToStation: p.timeToStation,
+          }))
+          .sort(StopService.arrivalSortFn),
       ),
     );
   }
 
+  private static arrivalSortFn = (a: StopArrival, b: StopArrival) =>
+    a.timeToStation - b.timeToStation;
+
   timetable(stopId: string, lineId: string): Observable<StopTimetable> {
     return this.tflService.stopPointTimetable(lineId, stopId).pipe(
-      // delay(2000),
-      // tap(() => {
-      //   if (Math.random() < 0.5) {
-      //     throw new Error('Just throwing');
-      //   }
-      // }),
       map((response) => ({
         weekday: this.timetableForDay(response, 'Monday to Friday'),
         saturday: this.timetableForDay(response, 'Saturday'),

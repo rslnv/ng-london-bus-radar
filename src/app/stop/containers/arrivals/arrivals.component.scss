@@ -1,5 +1,10 @@
 .header {
   margin-bottom: 1em;
+
+  app-bus-stop {
+    display: block;
+    margin-bottom: 1em;
+  }
 }
 
 .view-filter {
@@ -19,6 +24,7 @@
   }
 }
 
-.content {
-  margin-top: 1em;
+.content>* {
+  display: block;
+  margin-bottom: 1em;
 }

@@ -12,4 +12,5 @@ import { StopListItem } from '../../models/stop-list-item';
 })
 export class BusStopComponent {
   stop = input.required<StopListItem>();
+  hideLines = input<boolean>(false);
 }
