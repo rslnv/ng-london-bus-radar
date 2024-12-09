@@ -1,14 +1,37 @@
 @let details = details$ | async;
 @if (details) {
   <div class="header">
-    <app-bus-stop [stop]="details" [hideLines]="true" />
+    @switch (details.state) {
+      @case ('loading') {
+        <app-loading />
+      }
+      @case ('error') {
+        <app-error
+          (onRefresh)="detailsRefresherSubject.next()"
+          [errorData]="details.error"
+        />
+      }
+      @case ('done') {
+        <app-bus-stop [stop]="details.data" [hideLines]="true" />
+      }
+    }
 
+    <button
+      mat-mini-fab
+      aria-label="Refresh arrivals"
+      (click)="refresherSubject.next()"
+    >
+      <mat-icon>refresh</mat-icon>
+    </button>
+  </div>
+
+  @if (details.state === 'done') {
     <app-line-filter
-      [lines]="details.lines"
+      [lines]="details.data.lines"
       [preSelectedLine]="lineId()"
       (filter)="lineFilter.set($event)"
     />
-  </div>
+  }
 }
 
 @if (lineFilter()) {
@@ -26,10 +49,20 @@
 @let arrivals = arrivals$ | async;
 @if (arrivals && (!lineFilter() || arrivalTimeSpan() === 'live')) {
   <div class="content">
-    @for (arrival of arrivals; track arrival.id; let last = $last) {
-      <app-bus-arrival [item]="arrival" />
-    } @empty {
-      <div>No results</div>
+    @switch (arrivals.state) {
+      @case ('error') {
+        <app-error
+          (onRefresh)="refresherSubject.next()"
+          [errorData]="arrivals.error"
+        />
+      }
+      @case ('done') {
+        @for (arrival of arrivals.data; track arrival.id; let last = $last) {
+          <app-bus-arrival [item]="arrival" />
+        } @empty {
+          <div>No results</div>
+        }
+      }
     }
   </div>
 } @else if (lineFilter()) {

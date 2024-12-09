@@ -1,16 +1,22 @@
 .header {
   margin-bottom: 1em;
 
-  app-bus-stop {
-    display: block;
-    margin-bottom: 1em;
+  display: flex;
+  flex-direction: row;
+  gap: 0.3em;
+
+  button {
+    margin-left: auto;
   }
 }
 
-.view-filter {
-  margin-top: 1em;
+app-line-filter {
+  display: block;
   margin-bottom: 1em;
+}
 
+.view-filter {
+  margin-bottom: 1em;
   text-align: center;
 
   mat-button-toggle-group {
@@ -25,6 +31,8 @@
 }
 
 .content {
+  margin-top: 1em;
+
   & > * {
     display: block;
     margin-bottom: 1em;

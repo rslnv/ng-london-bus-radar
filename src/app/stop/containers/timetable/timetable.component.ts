@@ -56,7 +56,7 @@ export class TimetableComponent {
       this.stopService.timetable(s, l).pipe(
         map((data) => ({ state: 'done', data }) as VM),
         catchError((err) => {
-          console.error('Unable to find bus routes', err);
+          console.error('Unable to find timetable', err);
           return of({ state: 'error', error: err } as VM);
         }),
         startWith({ state: 'loading' } as VM),
