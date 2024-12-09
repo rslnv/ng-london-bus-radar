@@ -3,8 +3,10 @@
 }
 
 .sidenav {
-
   width: 56px;
+  border-radius: 0;
+  border-right: 1px solid #aaa;
+
   .mat-mdc-list-item {
     span {
       display: none;
@@ -12,12 +14,17 @@
   }
 
   &.expanded {
-
     width: 220px;
     .mat-mdc-list-item {
       span {
         display: block;
       }
+    }
+  }
+
+  mat-nav-list {
+    a {
+      border-radius: 0;
     }
   }
 }
