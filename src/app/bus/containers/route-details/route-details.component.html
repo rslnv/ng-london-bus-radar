@@ -1,39 +1,52 @@
-@let data = data$ | async;
-@if (data) {
-  <a
-    [routerLink]="data.isOutboundOnly ? null : ['../', reverseDirection()]"
-    [attr.title]="data.isOutboundOnly ? null : 'Switch route direction'"
-    class="header"
-  >
-    <div class="badge">
-      {{ data.lineName }}
-    </div>
-
-    <div class="destinations">
-      <div class="destination">
-        <small>from</small>
-        <div>{{ data.from }}</div>
+@let viewModel = viewModel$ | async;
+@if (viewModel) {
+  @if (viewModel.state === 'done') {
+    <a
+      [routerLink]="
+        viewModel.data.isOutboundOnly ? null : ['../', reverseDirection()]
+      "
+      [attr.title]="
+        viewModel.data.isOutboundOnly ? null : 'Switch route direction'
+      "
+      class="header"
+    >
+      <div class="badge">
+        {{ viewModel.data.lineName }}
       </div>
 
-      @if (!data.isOutboundOnly) {
-        <a class="reverse">
-          <mat-icon>compare_arrows</mat-icon>
-        </a>
+      <div class="destinations">
+        <div class="destination">
+          <small>from</small>
+          <div>{{ viewModel.data.from }}</div>
+        </div>
+
+        @if (!viewModel.data.isOutboundOnly) {
+          <a class="reverse">
+            <mat-icon>compare_arrows</mat-icon>
+          </a>
+        }
+
+        <div class="destination">
+          <small>to</small>
+          <div>{{ viewModel.data.to }}</div>
+        </div>
+      </div>
+    </a>
+
+    <div class="content">
+      @for (stop of viewModel.data.stops; track stop.id) {
+        <app-bus-stop
+          [stop]="stop"
+          [routerLink]="['/stop', stop.id, viewModel.data.lineId]"
+        />
       }
-
-      <div class="destination">
-        <small>to</small>
-        <div>{{ data.to }}</div>
-      </div>
     </div>
-  </a>
-
-  <div class="content">
-    @for (stop of data.stops; track stop.id) {
-      <app-bus-stop
-        [stop]="stop"
-        [routerLink]="['/stop', stop.id, data.lineId]"
-      />
-    }
-  </div>
+  } @else if (viewModel.state === 'loading') {
+    <app-loading />
+  } @else if (viewModel.state === 'error') {
+    <app-error
+      [errorData]="viewModel.error"
+      (onRefresh)="this.refresherSubject.next()"
+    />
+  }
 }
