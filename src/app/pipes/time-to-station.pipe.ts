@@ -2,7 +2,6 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'timeToStation',
-  standalone: true,
 })
 export class TimeToStationPipe implements PipeTransform {
   transform(secondsToStation: number) {

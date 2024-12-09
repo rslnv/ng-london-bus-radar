@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, input } from '@angular/core';
+import { TimeToStationPipe } from '../../../pipes/arrival-hour.pipe';
 import { Journey } from '../../models/journey';
 
 @Component({
@@ -7,7 +8,7 @@ import { Journey } from '../../models/journey';
   template: `
     @for (h of hours(); track h) {
       <div class="row">
-        <div class="hour">{{ h }}</div>
+        <div class="hour">{{ h | arrivalHour }}</div>
         @let minutes = getMinutes(journeys(), h);
         @for (m of minutes; track m.id) {
           <div class="minute">{{ m.value }}</div>
@@ -28,7 +29,7 @@ import { Journey } from '../../models/journey';
       }
     }
   `,
-  imports: [CommonModule],
+  imports: [CommonModule, TimeToStationPipe],
 })
 export class ScheduleComponent {
   journeys = input.required<Journey[]>();

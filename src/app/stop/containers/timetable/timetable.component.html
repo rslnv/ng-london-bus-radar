@@ -8,23 +8,16 @@
       <app-error (onRefresh)="refresherSubject.next()" [errorData]="vm.error" />
     }
     @case ('done') {
-      @switch (arrivalTimeSpan()) {
-        @case ('weekday') {
-          <div>Monday - Friday</div>
-          <app-schedule [journeys]="vm.data.weekday" />
-        }
-        @case ('saturday') {
-          <div>Saturday</div>
-          <app-schedule [journeys]="vm.data.saturday" />
-        }
-        @case ('sunday') {
-          <div>Sunday - Bank Holidays</div>
-          <app-schedule [journeys]="vm.data.sunday" />
-        }
-        @default {
-          <div>Unexpected time span</div>
-        }
-      }
+      <mat-form-field>
+        <mat-label>Priod</mat-label>
+        <mat-select [(ngModel)]="timetableIndex">
+          @for (item of vm.data; track item.name; let idx = $index) {
+            <mat-option [value]="idx">{{ item.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <app-schedule [journeys]="vm.data[timetableIndex()].arrivals" />
     }
   }
 }

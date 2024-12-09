@@ -24,7 +24,13 @@
   }
 }
 
-.content>* {
-  display: block;
-  margin-bottom: 1em;
+.content {
+  & > * {
+    display: block;
+    margin-bottom: 1em;
+  }
+
+  div {
+    text-align: center;
+  }
 }

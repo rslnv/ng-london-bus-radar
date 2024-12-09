@@ -7,7 +7,6 @@ import { map, switchMap, tap } from 'rxjs';
 import { BusStopComponent } from '../../../components/bus-stop/bus-stop.component';
 import { BusArrivalComponent } from '../../components/bus-arrival/bus-arrival.component';
 import { LineFilterComponent } from '../../components/line-filter/line-filter.components';
-import { ArrivalTimeSpan } from '../../models/arrival-time-span';
 import { StopService } from '../../services/stop.service';
 import { TimetableComponent } from '../timetable/timetable.component';
 
@@ -36,7 +35,7 @@ export class StopArrivalsComponent {
   lineFilter = signal<string | null>(null);
   private lineFilter$ = toObservable(this.lineFilter);
 
-  arrivalTimeSpan = signal<ArrivalTimeSpan>('live');
+  arrivalTimeSpan = signal<'live' | 'timetable'>('live');
 
   details$ = this.stopId$.pipe(switchMap((s) => this.stopService.details(s)));
 

@@ -11,9 +11,9 @@
   }
 </mat-form-field>
 
-<div class="content">
-  @let viewModel = viewModel$ | async;
-  @if (viewModel) {
+@let viewModel = viewModel$ | async;
+@if (viewModel) {
+  <div class="content">
     @if (viewModel.state === 'done') {
       @for (item of viewModel.data; track item.id) {
         <app-bus-route-search-result
@@ -30,5 +30,5 @@
     } @else if (viewModel.state === 'error') {
       <app-error [errorData]="viewModel.error" />
     }
-  }
-</div>
+  </div>
+}

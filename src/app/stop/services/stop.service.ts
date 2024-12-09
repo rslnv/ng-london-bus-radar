@@ -1,12 +1,12 @@
 import { inject, Injectable } from '@angular/core';
 import { map, Observable, switchMap } from 'rxjs';
 import { StopPoint } from '../../models/api/stop-point';
-import { TimetableResponse } from '../../models/api/timetable-response';
+import { TimetableRoute } from '../../models/api/timetable-route';
 import { StopListItem } from '../../models/stop-list-item';
 import { TflService } from '../../services/tfl.service';
 import { StopArrival } from '../models/stop-arrival';
 import { StopDetails } from '../models/stop-details';
-import { StopTimetable, StopTimetableItem } from '../models/stop-timetable';
+import { StopTimetable } from '../models/stop-timetable';
 
 @Injectable({
   providedIn: 'root',
@@ -132,24 +132,21 @@ export class StopService {
     a.timeToStation - b.timeToStation;
 
   timetable(stopId: string, lineId: string): Observable<StopTimetable> {
-    return this.tflService.stopPointTimetable(lineId, stopId).pipe(
-      map((response) => ({
-        weekday: this.timetableForDay(response, 'Monday to Friday'),
-        saturday: this.timetableForDay(response, 'Saturday'),
-        sunday: this.timetableForDay(response, 'Sunday'),
-      })),
-    );
+    return this.tflService
+      .stopPointTimetable(lineId, stopId)
+      .pipe(
+        map((response) =>
+          StopService.toStopTimetable(response.timetable.routes[0]),
+        ),
+      );
   }
 
-  private timetableForDay(
-    response: TimetableResponse,
-    typeOfDay: 'Monday to Friday' | 'Saturday' | 'Sunday',
-  ): StopTimetableItem[] {
-    return (
-      response.timetable.routes[0]?.schedules
-        .find((s) => s.name === typeOfDay)
-        ?.knownJourneys.map((kj) => ({ hour: kj.hour, minute: kj.minute })) ??
-      []
-    );
-  }
+  private static toStopTimetable = (route: TimetableRoute): StopTimetable =>
+    route.schedules.map((s) => ({
+      name: s.name,
+      arrivals: s.knownJourneys.map((kj) => ({
+        hour: kj.hour,
+        minute: kj.minute,
+      })),
+    }));
 }

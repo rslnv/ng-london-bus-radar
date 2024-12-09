@@ -1,8 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, input } from '@angular/core';
+import { Component, inject, input, linkedSignal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
+import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
 import { BehaviorSubject, combineLatest, of, startWith, switchMap } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { ErrorComponent } from '../../../components/error/error.component';
@@ -13,7 +16,6 @@ import {
   ViewStateLoading,
 } from '../../../models/view-state';
 import { ScheduleComponent } from '../../components/schedule/schedule.component';
-import { ArrivalTimeSpan } from '../../models/arrival-time-span';
 import { StopTimetable } from '../../models/stop-timetable';
 import { StopService } from '../../services/stop.service';
 
@@ -23,8 +25,11 @@ import { StopService } from '../../services/stop.service';
   styleUrl: './timetable.component.scss',
   imports: [
     CommonModule,
+    FormsModule,
     ScheduleComponent,
     MatButtonModule,
+    MatButtonToggleModule,
+    MatSelectModule,
     MatIconModule,
     LoadingComponent,
     ErrorComponent,
@@ -35,9 +40,13 @@ export class TimetableComponent {
 
   lineId = input.required<string>();
   stopId = input.required<string>();
-  arrivalTimeSpan = input.required<ArrivalTimeSpan>();
 
   refresherSubject = new BehaviorSubject<void>(undefined);
+
+  timetableIndex = linkedSignal({
+    source: this.lineId,
+    computation: (_) => 0,
+  });
 
   data$ = combineLatest([
     toObservable(this.stopId),
