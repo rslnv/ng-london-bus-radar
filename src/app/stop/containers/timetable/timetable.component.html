@@ -9,7 +9,7 @@
     }
     @case ('done') {
       <mat-form-field>
-        <mat-label>Priod</mat-label>
+        <mat-label>Period</mat-label>
         <mat-select [(ngModel)]="timetableIndex">
           @for (item of vm.data; track item.name; let idx = $index) {
             <mat-option [value]="idx">{{ item.name }}</mat-option>
