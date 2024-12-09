@@ -11,16 +11,10 @@ import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-error',
-  styles: `
-    div {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.3em;
-    }
-  `,
   template: `
-    <div>
+    <div
+      style="display: flex; flex-direction: column; align-items: center; gap: 0.3em;"
+    >
       @if (errorMessage()) {
         <span>{{ errorMessage() }}</span>
       } @else {
