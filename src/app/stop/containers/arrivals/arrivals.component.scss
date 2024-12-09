@@ -1,3 +1,9 @@
+@property --progress {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 0%;
+}
+
 .header {
   margin-bottom: 1em;
 
@@ -5,8 +11,20 @@
   flex-direction: row;
   gap: 0.3em;
 
-  button {
+  button.refresh {
+    --progress: 0%;
+
     margin-left: auto;
+    background-image: conic-gradient(
+      from 0deg,
+      #0003 var(--progress),
+      transparent 0
+    );
+
+    &[running='true'] {
+      --progress: 100%;
+      transition: --progress 29s linear;
+    }
   }
 }
 

@@ -8,9 +8,11 @@ import { MatIconModule } from '@angular/material/icon';
 import {
   BehaviorSubject,
   catchError,
+  delay,
   map,
   of,
   scan,
+  shareReplay,
   startWith,
   switchMap,
   tap,
@@ -59,9 +61,13 @@ export class StopArrivalsComponent {
 
   refresherSubject = new BehaviorSubject<void>(undefined);
   refresher$ = this.refresherSubject.pipe(
-    switchMap((_) => timer(0, 60000)),
-    scan((acc, _) => acc + 1, 0),
-    tap((n) => console.log('Refreshing arrivals ', n)),
+    // keep in sync with css transition
+    switchMap((_) => timer(0, 30000)),
+    shareReplay({ bufferSize: 1, refCount: true }),
+  );
+
+  progressAnimation$ = this.refresher$.pipe(
+    switchMap((_) => of(true).pipe(delay(100), startWith(false))),
   );
 
   detailsRefresherSubject = new BehaviorSubject<void>(undefined);
