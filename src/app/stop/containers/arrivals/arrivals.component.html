@@ -2,7 +2,7 @@
   {
     details: details$ | async,
     arrivals: arrivals$ | async,
-    progressAnimation: progressAnimation$ | async,
+    refresher: refresher$ | async,
   };
 @if (vm.details) {
   <div class="header">
@@ -21,15 +21,11 @@
       }
     }
 
-    <button
-      class="refresh"
-      mat-mini-fab
-      aria-label="Refresh arrivals"
-      [attr.running]="vm.progressAnimation"
-      (click)="refresherSubject.next()"
-    >
-      <mat-icon>refresh</mat-icon>
-    </button>
+    <app-refresh-with-progress
+      [duration]="REFRESH_PERIOD"
+      [reset]="vm.refresher"
+      (refresh)="refresherSubject.next()"
+    />
   </div>
 
   @if (vm.details.state === 'done') {

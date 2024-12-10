@@ -32,6 +32,7 @@ import { StopService } from '../../services/stop.service';
 import { TimetableComponent } from '../timetable/timetable.component';
 import { LoadingComponent } from '../../../components/loading/loading.component';
 import { ErrorComponent } from '../../../components/error/error.component';
+import { RefreshWithProgressComponent } from '../../components/refresh-with-progress/refresh-with-progress.component';
 
 @Component({
   selector: 'app-stop-arrivals',
@@ -49,9 +50,12 @@ import { ErrorComponent } from '../../../components/error/error.component';
     BusArrivalComponent,
     LoadingComponent,
     ErrorComponent,
+    RefreshWithProgressComponent,
   ],
 })
 export class StopArrivalsComponent {
+  public readonly REFRESH_PERIOD = 30;
+
   private stopService = inject(StopService);
 
   lineId = input.required<string>();
@@ -61,13 +65,10 @@ export class StopArrivalsComponent {
 
   refresherSubject = new BehaviorSubject<void>(undefined);
   refresher$ = this.refresherSubject.pipe(
-    // keep in sync with css transition
-    switchMap((_) => timer(0, 30000)),
+    switchMap((_) => timer(0, this.REFRESH_PERIOD * 1000)),
+    // alternating to trigger input signal
+    scan((acc, _) => (acc + 1) % 2, 0),
     shareReplay({ bufferSize: 1, refCount: true }),
-  );
-
-  progressAnimation$ = this.refresher$.pipe(
-    switchMap((_) => of(true).pipe(delay(100), startWith(false))),
   );
 
   detailsRefresherSubject = new BehaviorSubject<void>(undefined);
