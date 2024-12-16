@@ -1,7 +1,7 @@
 export type StopDetails = {
   id: string;
+  commonName: string;
   stopLetter?: string;
   towards?: string;
-  commonName: string;
   lines: { id: string; name: string }[];
 };

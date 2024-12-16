@@ -113,8 +113,9 @@ export class StopService {
 
     return {
       stopLetter: stop.stopLetter ?? child?.stopLetter,
-      towards: stop.additionalProperties.find((ap) => ap.key === 'Towards')
-        ?.value,
+      towards:
+        stop.additionalProperties.find((ap) => ap.key === 'Towards')?.value ??
+        child?.additionalProperties.find((ap) => ap.key === 'Towards')?.value,
     };
   }
 
