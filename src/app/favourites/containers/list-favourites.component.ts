@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { BusStopComponent } from '../../components/bus-stop/bus-stop.component';
 import { MatIcon } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-list-favourites',
@@ -16,7 +17,8 @@ import { MatButtonModule } from '@angular/material/button';
         margin-bottom: 1em;
 
         app-bus-stop {
-          margin-right: auto;
+          width: 100%;
+          cursor: pointer;
         }
       }
 
@@ -29,7 +31,7 @@ import { MatButtonModule } from '@angular/material/button';
     <div class="content">
       @for (item of store.items(); track item) {
         <div class="item">
-          <app-bus-stop [stop]="item" />
+          <app-bus-stop [stop]="item" [routerLink]="['/stop', item.id]" />
           <button
             mat-icon-button
             aria-label="Remove from favourites"
@@ -43,7 +45,13 @@ import { MatButtonModule } from '@angular/material/button';
       }
     </div>
   `,
-  imports: [CommonModule, BusStopComponent, MatButtonModule, MatIcon],
+  imports: [
+    CommonModule,
+    BusStopComponent,
+    MatButtonModule,
+    MatIcon,
+    RouterModule,
+  ],
 })
 export class ListFavouritesComponent {
   store = inject(FavouritesStore);
