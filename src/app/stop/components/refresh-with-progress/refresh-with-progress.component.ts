@@ -28,7 +28,7 @@ import { delay, of, startWith, switchMap, tap } from 'rxjs';
   template: `
     <button
       class="refresh"
-      mat-mini-fab
+      mat-icon-button
       aria-label="Refresh arrivals"
       [ngStyle]="style$ | async"
       (click)="refresh.emit()"
