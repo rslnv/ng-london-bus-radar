@@ -27,6 +27,7 @@ export class SidenavComponent {
   hideSidenav = () => this.isExpanded.set(false);
 
   menuItems = [
+    { icon: 'favorite', label: 'Favourites', link: ['favourites'] },
     { icon: 'directions_bus', label: 'Stops', link: ['stop'] },
     { icon: 'route', label: 'Routes', link: ['bus'] },
   ];

@@ -8,7 +8,6 @@ import { MatIconModule } from '@angular/material/icon';
 import {
   BehaviorSubject,
   catchError,
-  delay,
   map,
   of,
   scan,
@@ -19,6 +18,8 @@ import {
   timer,
 } from 'rxjs';
 import { BusStopComponent } from '../../../components/bus-stop/bus-stop.component';
+import { ErrorComponent } from '../../../components/error/error.component';
+import { LoadingComponent } from '../../../components/loading/loading.component';
 import {
   ViewStateDone,
   ViewStateError,
@@ -26,13 +27,12 @@ import {
 } from '../../../models/view-state';
 import { BusArrivalComponent } from '../../components/bus-arrival/bus-arrival.component';
 import { LineFilterComponent } from '../../components/line-filter/line-filter.components';
+import { RefreshWithProgressComponent } from '../../components/refresh-with-progress/refresh-with-progress.component';
 import { StopArrival } from '../../models/stop-arrival';
 import { StopDetails } from '../../models/stop-details';
 import { StopService } from '../../services/stop.service';
+import { FavouritesToggleComponent } from '../favourites-toggle/favourites-toggle.component';
 import { TimetableComponent } from '../timetable/timetable.component';
-import { LoadingComponent } from '../../../components/loading/loading.component';
-import { ErrorComponent } from '../../../components/error/error.component';
-import { RefreshWithProgressComponent } from '../../components/refresh-with-progress/refresh-with-progress.component';
 
 @Component({
   selector: 'app-stop-arrivals',
@@ -51,6 +51,7 @@ import { RefreshWithProgressComponent } from '../../components/refresh-with-prog
     LoadingComponent,
     ErrorComponent,
     RefreshWithProgressComponent,
+    FavouritesToggleComponent,
   ],
 })
 export class StopArrivalsComponent {

@@ -4,9 +4,11 @@
   display: flex;
   flex-direction: row;
   gap: 0.3em;
+  justify-content: flex-end;
+  align-items: center;
 
-  app-refresh-with-progress {
-    margin-left: auto;
+  app-bus-stop {
+    margin-right: auto;
   }
 }
 

@@ -18,9 +18,9 @@
       }
       @case ('done') {
         <app-bus-stop [stop]="vm.details.data" [hideLines]="true" />
+        <app-favourites-toggle [stop]="vm.details.data" />
       }
     }
-
     <app-refresh-with-progress
       [duration]="REFRESH_PERIOD"
       [reset]="vm.refresher"
