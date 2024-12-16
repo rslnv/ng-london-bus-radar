@@ -3,7 +3,7 @@ import { Component, input, output } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
-import { delay, of, startWith, switchMap, tap } from 'rxjs';
+import { delay, of, startWith, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-refresh-with-progress',

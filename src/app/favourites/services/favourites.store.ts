@@ -23,8 +23,6 @@ export const FavouritesStore = signalStore(
 
   withComputed(({ items: favourites }) => ({
     any: computed(() => !!favourites().length),
-    // count: computed(() => favourites().length),
-    // lastIndex: computed(() => favourites().at(-1)?.id ?? -1),
   })),
 
   withMethods((store) => ({

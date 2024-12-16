@@ -1,10 +1,10 @@
-import { Component, inject } from '@angular/core';
-import { FavouritesStore } from '../services/favourites.store';
 import { CommonModule } from '@angular/common';
-import { BusStopComponent } from '../../components/bus-stop/bus-stop.component';
-import { MatIcon } from '@angular/material/icon';
+import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
+import { BusStopComponent } from '../../components/bus-stop/bus-stop.component';
+import { FavouritesStore } from '../services/favourites.store';
 
 @Component({
   selector: 'app-list-favourites',
