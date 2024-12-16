@@ -91,12 +91,18 @@ export class StopService {
     return this.tflService.stopPointDetails(stopId).pipe(
       map((details) => {
         const stopProperties = StopService.getStopProperties(details, stopId);
+        const busLines =
+          details.lineModeGroups.find((lmg) => lmg.modeName === 'bus')
+            ?.lineIdentifier ?? [];
+
         return {
           id: stopId,
           stopLetter: stopProperties.stopLetter,
           towards: stopProperties.towards,
           commonName: details.commonName,
-          lines: details.lines.map((l) => ({ id: l.id, name: l.name })),
+          lines: details.lines
+            .map((l) => ({ id: l.id, name: l.name }))
+            .filter((l) => busLines.includes(l.id)),
         };
       }),
     );

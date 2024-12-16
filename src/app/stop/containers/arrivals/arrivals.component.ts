@@ -54,7 +54,7 @@ import { RefreshWithProgressComponent } from '../../components/refresh-with-prog
   ],
 })
 export class StopArrivalsComponent {
-  public readonly REFRESH_PERIOD = 30;
+  readonly REFRESH_PERIOD = 30;
 
   private stopService = inject(StopService);
 

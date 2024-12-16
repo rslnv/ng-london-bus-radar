@@ -1,11 +1,14 @@
 .filter {
   display: flex;
+  flex-wrap: wrap;
+  row-gap: 0.3em;
+  padding-left: 1px;
 
-  &>* {
+  & > * {
     min-width: 3em;
     height: 3em;
     border: 1px solid #aaa;
-    border-right: none;
+    margin-left: -1px;
 
     &:last-of-type {
       border-right: 1px solid #aaa;

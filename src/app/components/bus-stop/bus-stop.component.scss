@@ -28,7 +28,8 @@
 
     .line-badges {
       display: flex;
-      gap: 0.5em;
+      gap: 0.1em 0.5em;
+      flex-wrap: wrap;
 
       span {
         font-size: 0.7em;
