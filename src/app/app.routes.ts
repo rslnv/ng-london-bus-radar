@@ -1,7 +1,9 @@
+import { inject } from '@angular/core';
 import { Routes } from '@angular/router';
 import { FindRouteComponent } from './bus/containers/find-route/find-route.component';
 import { RouteDetailsComponent } from './bus/containers/route-details/route-details.component';
 import { ListFavouritesComponent } from './favourites/containers/list-favourites.component';
+import { FavouritesStore } from './favourites/services/favourites.store';
 import { StopArrivalsComponent } from './stop/containers/arrivals/arrivals.component';
 import { FindStopComponent } from './stop/containers/find-stop/find-stop.component';
 
@@ -18,5 +20,12 @@ export const routes: Routes = [
   { path: 'stop/:stopId', component: StopArrivalsComponent },
   { path: 'stop', component: FindStopComponent },
   { path: 'favourites', component: ListFavouritesComponent },
-  { path: '', redirectTo: 'stop', pathMatch: 'full' },
+  {
+    path: '',
+    redirectTo: () => {
+      const favouritesStore = inject(FavouritesStore);
+      return favouritesStore.any() ? 'favourites' : 'stop';
+    },
+    pathMatch: 'full',
+  },
 ];
