@@ -21,19 +21,21 @@
         </a>
       }
 
-      @for (item of menuItems; track item) {
-        <a
-          mat-list-item
-          [routerLink]="item.link"
-          routerLinkActive
-          #rla="routerLinkActive"
-          [activated]="rla.isActive"
-          ariaCurrentWhenActive="page"
-          (click)="hideSidenav()"
-        >
-          <mat-icon matListItemIcon [innerHTML]="item.icon" />
-          <span matListItemTitle [innerHTML]="item.label"></span>
-        </a>
+      @for (item of menuItems; track item; let idx = $index) {
+        @if (showFavourites() || idx > 0) {
+          <a
+            mat-list-item
+            [routerLink]="item.link"
+            routerLinkActive
+            #rla="routerLinkActive"
+            [activated]="rla.isActive"
+            ariaCurrentWhenActive="page"
+            (click)="hideSidenav()"
+          >
+            <mat-icon matListItemIcon [innerHTML]="item.icon" />
+            <span matListItemTitle [innerHTML]="item.label"></span>
+          </a>
+        }
       }
     </mat-nav-list>
   </mat-sidenav>

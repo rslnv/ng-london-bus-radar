@@ -4,6 +4,7 @@ import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { map, Observable, shareReplay, tap } from 'rxjs';
 import { SidenavComponent } from './components/sidenav/sidenav.component';
+import { FavouritesStore } from './favourites/services/favourites.store';
 
 @Component({
   selector: 'app-root',
@@ -12,6 +13,7 @@ import { SidenavComponent } from './components/sidenav/sidenav.component';
   imports: [AsyncPipe, RouterOutlet, SidenavComponent],
 })
 export class AppComponent {
+  favouritesStore = inject(FavouritesStore);
   private breakpointObserver = inject(BreakpointObserver);
 
   isHandset$: Observable<boolean> = this.breakpointObserver

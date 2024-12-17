@@ -21,6 +21,8 @@ import { RouterModule } from '@angular/router';
 })
 export class SidenavComponent {
   isHandset = input.required<boolean>();
+  showFavourites = input<boolean>(false);
+
   isExpanded = signal(false);
 
   toggleIsExpanded = () => this.isExpanded.update((value) => !value);
