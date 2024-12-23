@@ -21,7 +21,7 @@
         </a>
       }
 
-      @for (item of menuItems; track item; let idx = $index) {
+      @for (item of menuItems; track item.link; let idx = $index) {
         @if (showFavourites() || idx > 0) {
           <a
             mat-list-item

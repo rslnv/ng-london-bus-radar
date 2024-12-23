@@ -1,0 +1,24 @@
+<div cdkDropList class="content" (cdkDropListDropped)="drop($event)">
+  @for (item of store.items(); track item.id) {
+    <div cdkDrag class="item">
+      <button
+        cdkDragHandle
+        mat-icon-button
+        aria-label="Manually change order by dragging"
+        class="drag-handle"
+      >
+        <mat-icon>drag_indicator</mat-icon>
+      </button>
+      <app-bus-stop [stop]="item" [routerLink]="['/stop', item.id]" />
+      <button
+        mat-icon-button
+        aria-label="Remove from favourites"
+        (click)="remove(item.id)"
+      >
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  } @empty {
+    <p>No results</p>
+  }
+</div>

@@ -1,3 +1,4 @@
+import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { computed } from '@angular/core';
 import {
   patchState,
@@ -47,6 +48,15 @@ export const FavouritesStore = signalStore(
 
     isPresent(id: string): boolean {
       return store.items().findIndex((f) => f.id === id) >= 0;
+    },
+
+    setOrder(prevIndex: number, currIndex: number): void {
+      patchState(store, (state) => {
+        const itemsCopy = [...state.items];
+        moveItemInArray(itemsCopy, prevIndex, currIndex);
+        return { items: [...itemsCopy] };
+      });
+      this._save();
     },
   })),
 
