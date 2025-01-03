@@ -8,10 +8,10 @@ import {
   withMethods,
   withState,
 } from '@ngrx/signals';
-import { StopDetails } from '../../stop/models/stop-details';
+import { StopListItem } from '../../models/stop-list-item';
 
 type FavouritesState = {
-  items: StopDetails[];
+  items: StopListItem[];
 };
 
 const initialState: FavouritesState = {
@@ -39,7 +39,7 @@ export const FavouritesStore = signalStore(
       this._save();
     },
 
-    add(item: StopDetails): void {
+    add(item: StopListItem): void {
       patchState(store, (state) => ({
         items: [...state.items.filter((x) => x.id !== item.id), item],
       }));
@@ -62,7 +62,7 @@ export const FavouritesStore = signalStore(
 
   withHooks({
     onInit(store) {
-      let data: StopDetails[] = [];
+      let data: StopListItem[] = [];
       try {
         const stringValue = localStorage.getItem('favourites');
         data = JSON.parse(stringValue ?? '');

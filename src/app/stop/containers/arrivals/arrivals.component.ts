@@ -29,10 +29,10 @@ import { BusArrivalComponent } from '../../components/bus-arrival/bus-arrival.co
 import { LineFilterComponent } from '../../components/line-filter/line-filter.components';
 import { RefreshWithProgressComponent } from '../../components/refresh-with-progress/refresh-with-progress.component';
 import { StopArrival } from '../../models/stop-arrival';
-import { StopDetails } from '../../models/stop-details';
 import { StopService } from '../../services/stop.service';
 import { FavouritesToggleComponent } from '../favourites-toggle/favourites-toggle.component';
 import { TimetableComponent } from '../timetable/timetable.component';
+import { StopListItem } from '../../../models/stop-list-item';
 
 @Component({
   selector: 'app-stop-arrivals',
@@ -126,5 +126,8 @@ export class StopArrivalsComponent {
   );
 }
 
-type DetailsVM = ViewStateDone<StopDetails> | ViewStateLoading | ViewStateError;
+type DetailsVM =
+  | ViewStateDone<StopListItem>
+  | ViewStateLoading
+  | ViewStateError;
 type ArrivalsVM = ViewStateDone<StopArrival[]> | ViewStateError;

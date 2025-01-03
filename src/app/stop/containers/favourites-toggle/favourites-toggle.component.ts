@@ -3,7 +3,7 @@ import { Component, computed, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { FavouritesStore } from '../../../favourites/services/favourites.store';
-import { StopDetails } from '../../models/stop-details';
+import { StopListItem } from '../../../models/stop-list-item';
 
 @Component({
   selector: 'app-favourites-toggle',
@@ -21,7 +21,7 @@ import { StopDetails } from '../../models/stop-details';
 })
 export class FavouritesToggleComponent {
   readonly store = inject(FavouritesStore);
-  readonly stop = input.required<StopDetails>();
+  readonly stop = input.required<StopListItem>();
 
   toggle() {
     const stopId = this.stop().id;

@@ -5,7 +5,6 @@ import { TimetableRoute } from '../../models/api/timetable-route';
 import { StopListItem } from '../../models/stop-list-item';
 import { TflService } from '../../services/tfl.service';
 import { StopArrival } from '../models/stop-arrival';
-import { StopDetails } from '../models/stop-details';
 import { StopTimetable } from '../models/stop-timetable';
 
 @Injectable({
@@ -89,7 +88,7 @@ export class StopService {
     longitude: stop.lon,
   });
 
-  details(stopId: string): Observable<StopDetails> {
+  details(stopId: string): Observable<StopListItem> {
     return this.tflService.stopPointDetails(stopId).pipe(
       map((details) => {
         const stopProperties = StopService.getStopProperties(details, stopId);
@@ -105,6 +104,8 @@ export class StopService {
           lines: details.lines
             .map((l) => ({ id: l.id, name: l.name }))
             .filter((l) => busLines.includes(l.id)),
+          latitude: details.lat,
+          longitude: details.lon,
         };
       }),
     );
