@@ -6,6 +6,7 @@ import { ListFavouritesComponent } from './favourites/containers/list-favourites
 import { FavouritesStore } from './favourites/services/favourites.store';
 import { StopArrivalsComponent } from './stop/containers/arrivals/arrivals.component';
 import { FindStopComponent } from './stop/containers/find-stop/find-stop.component';
+import { MapSearchComponent } from './map/containers/map-search/map-search.component';
 
 export const routes: Routes = [
   { path: 'bus/:routeId/:direction', component: RouteDetailsComponent },
@@ -20,6 +21,7 @@ export const routes: Routes = [
   { path: 'stop/:stopId', component: StopArrivalsComponent },
   { path: 'stop', component: FindStopComponent },
   { path: 'favourites', component: ListFavouritesComponent },
+  { path: 'map', component: MapSearchComponent },
   {
     path: '',
     redirectTo: () => {

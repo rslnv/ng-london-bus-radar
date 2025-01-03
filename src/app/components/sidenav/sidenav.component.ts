@@ -32,5 +32,6 @@ export class SidenavComponent {
     { icon: 'favorite', label: 'Favourites', link: ['favourites'] },
     { icon: 'directions_bus', label: 'Stops', link: ['stop'] },
     { icon: 'route', label: 'Routes', link: ['bus'] },
+    { icon: 'map', label: 'Map', link: ['map'] },
   ];
 }

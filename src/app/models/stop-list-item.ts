@@ -6,4 +6,6 @@ export type StopListItem = {
   stopLetter?: string;
   towards?: string;
   lines: LineListItem[];
+  latitude: number;
+  longitude: number;
 };

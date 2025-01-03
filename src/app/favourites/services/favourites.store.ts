@@ -68,7 +68,6 @@ export const FavouritesStore = signalStore(
         data = JSON.parse(stringValue ?? '');
       } catch {}
 
-      console.log('data', data);
       patchState(store, (state) => ({
         items: data,
       }));

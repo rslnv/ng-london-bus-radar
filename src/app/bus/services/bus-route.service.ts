@@ -87,6 +87,8 @@ export class BusRouteService {
       lines: sp.lines
         .filter((l) => l.id !== model.lineId)
         .map((l) => ({ id: l.id, name: l.name })),
+      latitude: sp.lat,
+      longitude: sp.lon,
     }));
     const from = !stops ? '' : stops[0].commonName;
     const to = !stops ? '' : stops[stops.length - 1].commonName;

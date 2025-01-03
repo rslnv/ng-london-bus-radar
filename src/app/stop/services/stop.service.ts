@@ -85,6 +85,8 @@ export class StopService {
     lines: stop.lines.map((l) => ({ id: l.id, name: l.name })),
     towards: stop.additionalProperties.find((ap) => ap.key === 'Towards')
       ?.value,
+    latitude: stop.lat,
+    longitude: stop.lon,
   });
 
   details(stopId: string): Observable<StopDetails> {
