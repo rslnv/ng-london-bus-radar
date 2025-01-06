@@ -1,29 +1,30 @@
+import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { RouterModule } from '@angular/router';
 import {
   catchError,
+  distinctUntilChanged,
   filter,
   map,
   of,
+  shareReplay,
   startWith,
   Subject,
   switchMap,
-  tap,
 } from 'rxjs';
-import { MapViewComponent } from '../../components/map-view/map-view.component';
-import { MapCenter } from '../../models/map-center';
-import { StopService } from '../../../stop/services/stop.service';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
 import { BusStopComponent } from '../../../components/bus-stop/bus-stop.component';
+import { ErrorComponent } from '../../../components/error/error.component';
+import { LoadingComponent } from '../../../components/loading/loading.component';
+import { StopListItem } from '../../../models/stop-list-item';
 import {
   ViewStateDone,
   ViewStateError,
   ViewStateLoading,
 } from '../../../models/view-state';
-import { StopListItem } from '../../../models/stop-list-item';
-import { ErrorComponent } from '../../../components/error/error.component';
-import { LoadingComponent } from '../../../components/loading/loading.component';
+import { StopService } from '../../../stop/services/stop.service';
+import { MapViewComponent } from '../../components/map-view/map-view.component';
+import { MapCenter } from '../../models/map-center';
 
 @Component({
   selector: 'app-map-search',
@@ -53,7 +54,7 @@ import { LoadingComponent } from '../../../components/loading/loading.component'
     @let viewModel = viewModel$ | async;
     @if (viewModel) {
       <app-map-view
-        [stops]="viewModel.state === 'done' ? viewModel.data : []"
+        [stops]="markers$ | async"
         (mapCenter)="moveSubject.next($event)"
       />
       <div class="content">
@@ -84,20 +85,47 @@ export class MapSearchComponent {
   private stopService = inject(StopService);
   moveSubject = new Subject<MapCenter>();
   move$ = this.moveSubject.pipe(
-    filter((x) => x.zoom >= 15),
-    tap(console.log),
+    // filter((x) => x.zoom >= 15),
+    distinctUntilChanged(
+      (prev, curr) =>
+        Math.abs(prev.latitude - curr.latitude) < 0.001 &&
+        Math.abs(prev.longitude - curr.longitude) < 0.001 &&
+        prev.zoom - curr.zoom < 1,
+    ),
     takeUntilDestroyed(),
   );
 
+  // zoom 14 => radius 500
+  // zoom 18 => radius 100
+  private zoomToRadius(zoom: number) {
+    let validZoom = Math.min(18, Math.floor(zoom));
+    validZoom = Math.max(14, validZoom);
+    const zoomDelta = validZoom - 14;
+    const radius = 500 - zoomDelta * 100;
+    return radius;
+  }
+
   viewModel$ = this.move$.pipe(
     switchMap((move) =>
-      this.stopService.findByLocation(move.latitude, move.longitude, 300).pipe(
-        map((data) => ({ state: 'done', data }) as VM),
-        catchError((err) => of({ state: 'error', error: err } as VM)),
-        startWith({ state: 'loading' } as VM),
-      ),
+      this.stopService
+        .findByLocation(
+          move.latitude,
+          move.longitude,
+          this.zoomToRadius(move.zoom),
+        )
+        .pipe(
+          map((data) => ({ state: 'done', data }) as VM),
+          catchError((err) => of({ state: 'error', error: err } as VM)),
+          startWith({ state: 'loading' } as VM),
+        ),
     ),
-    startWith({ state: 'done', data: [] } as VM),
+    startWith({ state: 'loading' } as VM),
+    shareReplay({ bufferSize: 1, refCount: true }),
+  );
+
+  markers$ = this.viewModel$.pipe(
+    filter((vm) => vm.state === 'done'),
+    map((vm) => vm.data),
   );
 }
 

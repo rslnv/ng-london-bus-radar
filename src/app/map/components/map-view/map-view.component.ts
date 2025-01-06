@@ -1,10 +1,11 @@
 import { Component, input, output } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MatIcon } from '@angular/material/icon';
 import { MapComponent, MarkerComponent } from '@maplibre/ngx-maplibre-gl';
 import { Map } from 'maplibre-gl';
 import { debounceTime, filter, map, Subject, tap } from 'rxjs';
-import { MapCenter } from '../../models/map-center';
 import { StopListItem } from '../../../models/stop-list-item';
+import { MapCenter } from '../../models/map-center';
 
 @Component({
   selector: 'app-map-view',
@@ -14,8 +15,16 @@ import { StopListItem } from '../../../models/stop-list-item';
       height: 100%;
     }
     .marker {
-      background-color: #fff;
-      padding: 1em;
+      min-width: 3em;
+      height: 3em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #c33;
+      color: #fff;
+      font-weight: bold;
+      border-radius: 50%;
+      font-size: 0.8em;
     }
   `,
   template: `
@@ -28,19 +37,25 @@ import { StopListItem } from '../../../models/stop-list-item';
       (mapLoad)="map = $event; moveSubject.next()"
       (move)="moveSubject.next()"
     >
-      @for (stop of this.stops(); track stop.id) {
-        <mgl-marker [lngLat]="[stop.longitude, stop.latitude]">
-          <div (click)="click(stop.id)" class="marker">
-            {{ stop.stopLetter }}
-          </div>
-        </mgl-marker>
+      @if (this.stops()?.length) {
+        @for (stop of this.stops(); track stop.id) {
+          <mgl-marker [lngLat]="[stop.longitude, stop.latitude]">
+            <div (click)="click(stop.id)" class="marker">
+              @if (stop.stopLetter) {
+                {{ stop.stopLetter }}
+              } @else {
+                <mat-icon>directions_bus</mat-icon>
+              }
+            </div>
+          </mgl-marker>
+        }
       }
     </mgl-map>
   `,
-  imports: [MapComponent, MarkerComponent],
+  imports: [MapComponent, MarkerComponent, MatIcon],
 })
 export class MapViewComponent {
-  stops = input<StopListItem[]>([]);
+  stops = input<StopListItem[] | null>();
   mapCenter = output<MapCenter>();
 
   map: Map | null = null;
@@ -54,9 +69,9 @@ export class MapViewComponent {
         const center = this.map!.getCenter().wrap();
         const zoom = this.map!.getZoom();
         return {
-          latitude: center.lat,
-          longitude: center.lng,
-          zoom: zoom,
+          latitude: +center.lat.toFixed(4),
+          longitude: +center.lng.toFixed(4),
+          zoom: +zoom.toFixed(4),
         };
       }),
       tap((m) => {
