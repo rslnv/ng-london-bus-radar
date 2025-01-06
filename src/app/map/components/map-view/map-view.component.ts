@@ -2,7 +2,9 @@ import { Component, input, output } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIcon } from '@angular/material/icon';
 import {
+  AttributionControlDirective,
   ControlComponent,
+  GeolocateControlDirective,
   MapComponent,
   MarkerComponent,
   NavigationControlDirective,
@@ -45,11 +47,20 @@ import { MapCenter } from '../../models/map-center';
       [zoom]="[17]"
       [center]="[-0.4095075214752038, 51.4467535422277]"
       [maxBounds]="[-0.7, 51.2, 0.4, 51.8]"
+      [attributionControl]="false"
       [preserveDrawingBuffer]="true"
       (mapLoad)="map = $event; moveSubject.next()"
       (move)="moveSubject.next()"
     >
-      <mgl-control mglNavigation> </mgl-control>
+      <mgl-control mglAttribution position="top-right" [compact]="true" />
+      <mgl-control
+        mglGeolocate
+        position="bottom-right"
+        [positionOptions]="{
+          enableHighAccuracy: true,
+        }"
+      />
+      <mgl-control mglNavigation position="bottom-right" />
 
       @if (this.stops()?.length) {
         @for (stop of this.stops(); track stop.id) {
@@ -67,7 +78,9 @@ import { MapCenter } from '../../models/map-center';
     </mgl-map>
   `,
   imports: [
+    AttributionControlDirective,
     ControlComponent,
+    GeolocateControlDirective,
     MapComponent,
     MarkerComponent,
     MatIcon,
