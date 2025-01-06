@@ -1,9 +1,21 @@
 import { Component, input, output } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIcon } from '@angular/material/icon';
-import { MapComponent, MarkerComponent } from '@maplibre/ngx-maplibre-gl';
+import {
+  ControlComponent,
+  MapComponent,
+  MarkerComponent,
+  NavigationControlDirective,
+} from '@maplibre/ngx-maplibre-gl';
 import { Map } from 'maplibre-gl';
-import { debounceTime, filter, map, Subject, tap } from 'rxjs';
+import {
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  map,
+  Subject,
+  tap,
+} from 'rxjs';
 import { StopListItem } from '../../../models/stop-list-item';
 import { MapCenter } from '../../models/map-center';
 
@@ -37,6 +49,8 @@ import { MapCenter } from '../../models/map-center';
       (mapLoad)="map = $event; moveSubject.next()"
       (move)="moveSubject.next()"
     >
+      <mgl-control mglNavigation> </mgl-control>
+
       @if (this.stops()?.length) {
         @for (stop of this.stops(); track stop.id) {
           <mgl-marker [lngLat]="[stop.longitude, stop.latitude]">
@@ -52,13 +66,29 @@ import { MapCenter } from '../../models/map-center';
       }
     </mgl-map>
   `,
-  imports: [MapComponent, MarkerComponent, MatIcon],
+  imports: [
+    ControlComponent,
+    MapComponent,
+    MarkerComponent,
+    MatIcon,
+    NavigationControlDirective,
+  ],
 })
 export class MapViewComponent {
   stops = input<StopListItem[] | null>();
   mapCenter = output<MapCenter>();
 
   map: Map | null = null;
+
+  // z14 => r500
+  // z18 => r100
+  private zoomToRadius(zoom: number) {
+    let validZoom = Math.min(18, Math.floor(zoom));
+    validZoom = Math.max(14, validZoom);
+    const zoomDelta = validZoom - 14;
+    const radius = 500 - zoomDelta * 100;
+    return radius;
+  }
 
   moveSubject = new Subject<void>();
   move$ = this.moveSubject
@@ -67,13 +97,18 @@ export class MapViewComponent {
       debounceTime(500),
       map((_) => {
         const center = this.map!.getCenter().wrap();
-        const zoom = this.map!.getZoom();
         return {
-          latitude: +center.lat.toFixed(4),
-          longitude: +center.lng.toFixed(4),
-          zoom: +zoom.toFixed(4),
+          latitude: +center.lat.toFixed(3),
+          longitude: +center.lng.toFixed(3),
+          radius: this.zoomToRadius(this.map!.getZoom()),
         };
       }),
+      distinctUntilChanged(
+        (prev, curr) =>
+          Math.abs(prev.latitude - curr.latitude) < 0.001 &&
+          Math.abs(prev.longitude - curr.longitude) < 0.001 &&
+          prev.radius >= curr.radius,
+      ),
       tap((m) => {
         this.mapCenter.emit(m);
       }),

@@ -1,10 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterModule } from '@angular/router';
 import {
   catchError,
-  distinctUntilChanged,
   filter,
   map,
   of,
@@ -83,36 +81,13 @@ import { MapCenter } from '../../models/map-center';
 })
 export class MapSearchComponent {
   private stopService = inject(StopService);
+
   moveSubject = new Subject<MapCenter>();
-  move$ = this.moveSubject.pipe(
-    // filter((x) => x.zoom >= 15),
-    distinctUntilChanged(
-      (prev, curr) =>
-        Math.abs(prev.latitude - curr.latitude) < 0.001 &&
-        Math.abs(prev.longitude - curr.longitude) < 0.001 &&
-        prev.zoom - curr.zoom < 1,
-    ),
-    takeUntilDestroyed(),
-  );
 
-  // zoom 14 => radius 500
-  // zoom 18 => radius 100
-  private zoomToRadius(zoom: number) {
-    let validZoom = Math.min(18, Math.floor(zoom));
-    validZoom = Math.max(14, validZoom);
-    const zoomDelta = validZoom - 14;
-    const radius = 500 - zoomDelta * 100;
-    return radius;
-  }
-
-  viewModel$ = this.move$.pipe(
+  viewModel$ = this.moveSubject.pipe(
     switchMap((move) =>
       this.stopService
-        .findByLocation(
-          move.latitude,
-          move.longitude,
-          this.zoomToRadius(move.zoom),
-        )
+        .findByLocation(move.latitude, move.longitude, move.radius)
         .pipe(
           map((data) => ({ state: 'done', data }) as VM),
           catchError((err) => of({ state: 'error', error: err } as VM)),
