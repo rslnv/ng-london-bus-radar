@@ -1,5 +1,4 @@
-export type MapCenter = {
+export type LatLon = {
   latitude: number;
   longitude: number;
-  radius: number;
 };

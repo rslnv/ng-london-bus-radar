@@ -3,6 +3,8 @@ import { Component, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import {
   catchError,
+  debounceTime,
+  distinctUntilChanged,
   filter,
   map,
   of,
@@ -10,6 +12,7 @@ import {
   startWith,
   Subject,
   switchMap,
+  tap,
 } from 'rxjs';
 import { BusStopComponent } from '../../../components/bus-stop/bus-stop.component';
 import { ErrorComponent } from '../../../components/error/error.component';
@@ -22,7 +25,8 @@ import {
 } from '../../../models/view-state';
 import { StopService } from '../../../stop/services/stop.service';
 import { MapViewComponent } from '../../components/map-view/map-view.component';
-import { MapCenter } from '../../models/map-center';
+import { LatLonZoom } from '../../models/lat-lon-zoom';
+import { MapHelperService } from '../../services/map-helper.service';
 
 @Component({
   selector: 'app-map-search',
@@ -52,6 +56,7 @@ import { MapCenter } from '../../models/map-center';
     @let viewModel = viewModel$ | async;
     @if (viewModel) {
       <app-map-view
+        [startingLocation]="startingLocation"
         [stops]="markers$ | async"
         (mapCenter)="moveSubject.next($event)"
       />
@@ -81,10 +86,26 @@ import { MapCenter } from '../../models/map-center';
 })
 export class MapSearchComponent {
   private stopService = inject(StopService);
+  private mapHelperService = inject(MapHelperService);
+  startingLocation = this.mapHelperService.location;
 
-  moveSubject = new Subject<MapCenter>();
+  moveSubject = new Subject<LatLonZoom>();
 
   viewModel$ = this.moveSubject.pipe(
+    debounceTime(500),
+    map((latLonZoom) => ({
+      latitude: latLonZoom.latitude,
+      longitude: latLonZoom.longitude,
+      radius: MapHelperService.zoomToRadius(latLonZoom.zoom),
+    })),
+    distinctUntilChanged(MapHelperService.latLonRadiusComparer),
+    tap(
+      (x) =>
+        (this.mapHelperService.location = {
+          latitude: x.latitude,
+          longitude: x.longitude,
+        }),
+    ),
     switchMap((move) =>
       this.stopService
         .findByLocation(move.latitude, move.longitude, move.radius)

@@ -1,5 +1,5 @@
-import { Component, input, output } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Component, input } from '@angular/core';
+import { outputFromObservable } from '@angular/core/rxjs-interop';
 import { MatIcon } from '@angular/material/icon';
 import {
   AttributionControlDirective,
@@ -10,16 +10,10 @@ import {
   NavigationControlDirective,
 } from '@maplibre/ngx-maplibre-gl';
 import { Map } from 'maplibre-gl';
-import {
-  debounceTime,
-  distinctUntilChanged,
-  filter,
-  map,
-  Subject,
-  tap,
-} from 'rxjs';
+import { filter, map, Subject } from 'rxjs';
 import { StopListItem } from '../../../models/stop-list-item';
-import { MapCenter } from '../../models/map-center';
+import { LatLon } from '../../models/lat-lon';
+import { LatLonZoom } from '../../models/lat-lon-zoom';
 
 @Component({
   selector: 'app-map-view',
@@ -45,7 +39,7 @@ import { MapCenter } from '../../models/map-center';
     <mgl-map
       [style]="'https://tiles.openfreemap.org/styles/bright'"
       [zoom]="[17]"
-      [center]="[-0.4095075214752038, 51.4467535422277]"
+      [center]="[startingLocation().longitude, startingLocation().latitude]"
       [maxBounds]="[-0.7, 51.2, 0.4, 51.8]"
       [attributionControl]="false"
       [preserveDrawingBuffer]="true"
@@ -88,46 +82,26 @@ import { MapCenter } from '../../models/map-center';
   ],
 })
 export class MapViewComponent {
+  startingLocation = input.required<LatLon>();
+
   stops = input<StopListItem[] | null>();
-  mapCenter = output<MapCenter>();
 
   map: Map | null = null;
 
-  // z14 => r500
-  // z18 => r100
-  private zoomToRadius(zoom: number) {
-    let validZoom = Math.min(18, Math.floor(zoom));
-    validZoom = Math.max(14, validZoom);
-    const zoomDelta = validZoom - 14;
-    const radius = 500 - zoomDelta * 100;
-    return radius;
-  }
-
   moveSubject = new Subject<void>();
-  move$ = this.moveSubject
-    .pipe(
+  mapCenter = outputFromObservable<LatLonZoom>(
+    this.moveSubject.pipe(
       filter((_) => !!this.map),
-      debounceTime(500),
       map((_) => {
         const center = this.map!.getCenter().wrap();
         return {
           latitude: +center.lat.toFixed(3),
           longitude: +center.lng.toFixed(3),
-          radius: this.zoomToRadius(this.map!.getZoom()),
-        };
+          zoom: this.map!.getZoom(),
+        } as LatLonZoom;
       }),
-      distinctUntilChanged(
-        (prev, curr) =>
-          Math.abs(prev.latitude - curr.latitude) < 0.001 &&
-          Math.abs(prev.longitude - curr.longitude) < 0.001 &&
-          prev.radius >= curr.radius,
-      ),
-      tap((m) => {
-        this.mapCenter.emit(m);
-      }),
-      takeUntilDestroyed(),
-    )
-    .subscribe();
+    ),
+  );
 
   click(stopId: string) {
     console.log('Clicking stop', stopId);
