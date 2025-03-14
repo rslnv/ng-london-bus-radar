@@ -23,6 +23,6 @@ Focus is on London buses:
 - [x] Specifying search radius for stops
 - [x] Save stop to favourites
 - [x] Favourites section
-- [x] Manually sort favoutires
-- [ ] Find stops on map
+- [x] Manually sort favourites
+- [x] Find stops on map
 - [ ] Searching and filtering adds history steps
