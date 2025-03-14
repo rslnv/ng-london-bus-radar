@@ -24,7 +24,7 @@ export class StopService {
       switchMap((ids) => this.tflService.listStopPoints(ids)),
       map((stopPoints) =>
         stopPoints
-          .map((sp) => sp.children)
+          .map((sp) => (sp.children.length ? sp.children : sp))
           .flat()
           .filter(StopService.isBusStopPoint)
           .map(StopService.toStopListItem),
@@ -39,7 +39,7 @@ export class StopService {
         this.tflService.listStopPoints(ids).pipe(
           map((stopPoints) =>
             stopPoints
-              .map((sp) => sp.children)
+              .map((sp) => (sp.children.length ? sp.children : sp))
               .flat()
               .sort((a, b) => StopService.stopIdMatchesSortFn(a, b, ids[0]))
               .map(StopService.toStopListItem),
