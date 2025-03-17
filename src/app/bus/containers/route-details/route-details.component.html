@@ -35,10 +35,9 @@
 
     <div class="content">
       @for (stop of viewModel.data.stops; track stop.id) {
-        <app-bus-stop
-          [stop]="stop"
-          [routerLink]="['/stop', stop.id, viewModel.data.lineId]"
-        />
+        <a [routerLink]="['/stop', stop.id, viewModel.data.lineId]">
+          <app-bus-stop [stop]="stop" />
+        </a>
       }
     </div>
   } @else if (viewModel.state === 'loading') {

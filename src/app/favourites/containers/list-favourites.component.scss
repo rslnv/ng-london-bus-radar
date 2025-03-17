@@ -22,9 +22,10 @@
     cursor: move;
   }
 
-  app-bus-stop {
+  a {
     width: 100%;
-    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
   }
 }
 

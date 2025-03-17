@@ -1,5 +1,5 @@
 .content {
-  &>* {
+  & > * {
     margin: 0.7em 0;
     display: block;
   }
@@ -8,7 +8,8 @@
     text-align: center;
   }
 
-  app-bus-stop {
-    cursor: pointer;
+  a {
+    text-decoration: none;
+    color: inherit;
   }
 }

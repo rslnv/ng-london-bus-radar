@@ -31,8 +31,7 @@
     gap: 1em;
 
     .destination {
-
-      &>div {
+      & > div {
         font-weight: bold;
         word-break: break-word;
       }
@@ -49,9 +48,13 @@
 }
 
 .content {
-  app-bus-stop {
-    display: block;
+  & > * {
     margin: 0.7em 0;
-    cursor: pointer;
+    display: block;
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
   }
 }

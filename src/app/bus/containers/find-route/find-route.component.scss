@@ -3,22 +3,17 @@
 }
 
 .content {
-  &>* {
+  & > * {
     margin: 0.7em 0;
     display: block;
   }
 
-  div {
-    text-align: center;
+  a {
+    text-decoration: none;
+    color: inherit;
   }
 
-  app-bus-route-search-result {
-    cursor: pointer;
-    display: block;
-    margin-bottom: 1em;
-
-    &:last-of-type {
-      margin-bottom: 0;
-    }
+  div {
+    text-align: center;
   }
 }

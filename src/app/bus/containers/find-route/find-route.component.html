@@ -16,10 +16,9 @@
   <div class="content">
     @if (viewModel.state === 'done') {
       @for (item of viewModel.data; track item.id) {
-        <app-bus-route-search-result
-          [item]="item"
-          [routerLink]="[item.lineId, item.direction]"
-        />
+        <a [routerLink]="[item.lineId, item.direction]">
+          <app-bus-route-search-result [item]="item" />
+        </a>
       } @empty {
         <div>No results</div>
       }

@@ -9,7 +9,9 @@
       >
         <mat-icon>drag_indicator</mat-icon>
       </button>
-      <app-bus-stop [stop]="item" [routerLink]="['/stop', item.id]" />
+      <a [routerLink]="['/stop', item.id]">
+        <app-bus-stop [stop]="item" />
+      </a>
       <button
         mat-icon-button
         aria-label="Remove from favourites"

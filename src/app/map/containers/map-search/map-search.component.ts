@@ -42,13 +42,13 @@ import { MapHelperService } from '../../services/map-helper.service';
         margin: 0.7em 0;
         display: block;
       }
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
 
       div {
         text-align: center;
-      }
-
-      app-bus-stop {
-        cursor: pointer;
       }
     }
   `,
@@ -63,7 +63,9 @@ import { MapHelperService } from '../../services/map-helper.service';
       <div class="content">
         @if (viewModel.state === 'done') {
           @for (stop of viewModel.data; track stop.id) {
-            <app-bus-stop [stop]="stop" [routerLink]="['/stop', stop.id]" />
+            <a [routerLink]="['/stop', stop.id]">
+              <app-bus-stop [stop]="stop" />
+            </a>
           } @empty {
             <div>No results</div>
           }

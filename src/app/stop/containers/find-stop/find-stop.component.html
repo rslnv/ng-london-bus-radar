@@ -9,7 +9,9 @@
   @if (viewModel) {
     @if (viewModel.state === 'done') {
       @for (stop of viewModel.data; track stop.id) {
-        <app-bus-stop [stop]="stop" [routerLink]="['/stop', stop.id]" />
+        <a [routerLink]="['/stop', stop.id]">
+          <app-bus-stop [stop]="stop" />
+        </a>
       } @empty {
         <div>No results</div>
       }
