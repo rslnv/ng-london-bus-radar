@@ -91,15 +91,19 @@ export class StopService {
   details(stopId: string): Observable<StopListItem> {
     return this.tflService.stopPointDetails(stopId).pipe(
       map((details) => {
-        const stopProperties = StopService.getStopProperties(details, stopId);
+        details =
+          details.children.find((c) => c.naptanId === stopId) ?? details;
+
         const busLines =
           details.lineModeGroups.find((lmg) => lmg.modeName === 'bus')
             ?.lineIdentifier ?? [];
 
         return {
           id: stopId,
-          stopLetter: stopProperties.stopLetter,
-          towards: stopProperties.towards,
+          stopLetter: details.stopLetter,
+          towards: details.additionalProperties.find(
+            (ap) => ap.key === 'Towards',
+          )?.value,
           commonName: details.commonName,
           lines: details.lines
             .map((l) => ({ id: l.id, name: l.name }))
@@ -109,17 +113,6 @@ export class StopService {
         };
       }),
     );
-  }
-
-  private static getStopProperties(stop: StopPoint, stopId: string) {
-    const child = stop.children.find((s) => s.id === stopId);
-
-    return {
-      stopLetter: stop.stopLetter ?? child?.stopLetter,
-      towards:
-        stop.additionalProperties.find((ap) => ap.key === 'Towards')?.value ??
-        child?.additionalProperties.find((ap) => ap.key === 'Towards')?.value,
-    };
   }
 
   arrivals(stopId: string): Observable<StopArrival[]> {
