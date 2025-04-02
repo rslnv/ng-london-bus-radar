@@ -42,7 +42,7 @@ import { LatLonZoom } from '../../models/lat-lon-zoom';
       [center]="[startingLocation().longitude, startingLocation().latitude]"
       [maxBounds]="[-0.7, 51.2, 0.4, 51.8]"
       [attributionControl]="false"
-      [preserveDrawingBuffer]="true"
+      [canvasContextAttributes]="{ preserveDrawingBuffer: true }"
       (mapLoad)="map = $event; moveSubject.next()"
       (move)="moveSubject.next()"
     >
