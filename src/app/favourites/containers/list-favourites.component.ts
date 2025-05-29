@@ -4,7 +4,7 @@ import {
   CdkDragHandle,
   CdkDropList,
 } from '@angular/cdk/drag-drop';
-import { CommonModule } from '@angular/common';
+
 import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
@@ -21,11 +21,10 @@ import { FavouritesStore } from '../services/favourites.store';
     CdkDrag,
     CdkDragHandle,
     CdkDropList,
-    CommonModule,
     MatButtonModule,
     MatIcon,
-    RouterModule,
-  ],
+    RouterModule
+],
 })
 export class ListFavouritesComponent {
   store = inject(FavouritesStore);

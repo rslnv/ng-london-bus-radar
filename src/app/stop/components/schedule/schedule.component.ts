@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, computed, input } from '@angular/core';
 import { TimeToStationPipe } from '../../../pipes/arrival-hour.pipe';
 import { Journey } from '../../models/journey';
@@ -29,7 +29,7 @@ import { Journey } from '../../models/journey';
       }
     }
   `,
-  imports: [CommonModule, TimeToStationPipe],
+  imports: [TimeToStationPipe],
 })
 export class ScheduleComponent {
   journeys = input.required<Journey[]>();

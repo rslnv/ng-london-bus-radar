@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, input } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { StopListItem } from '../../models/stop-list-item';
@@ -7,7 +7,7 @@ import { StopListItem } from '../../models/stop-list-item';
   selector: 'app-bus-stop',
   styleUrl: './bus-stop.component.scss',
   templateUrl: './bus-stop.component.html',
-  imports: [MatIcon, CommonModule],
+  imports: [MatIcon],
 })
 export class BusStopComponent {
   stop = input.required<StopListItem>();

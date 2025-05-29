@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, computed, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
@@ -17,7 +17,7 @@ import { StopListItem } from '../../../models/stop-list-item';
       <mat-icon [fontIcon]="icon()"></mat-icon>
     </button>
   `,
-  imports: [MatIcon, MatButtonModule, CommonModule],
+  imports: [MatIcon, MatButtonModule],
 })
 export class FavouritesToggleComponent {
   readonly store = inject(FavouritesStore);
