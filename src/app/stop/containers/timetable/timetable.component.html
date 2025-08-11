@@ -1,23 +1,29 @@
-@let vm = viewModel$ | async;
-@if (vm) {
-  @switch (vm.state) {
-    @case ('loading') {
-      <app-loading />
-    }
-    @case ('error') {
-      <app-error (onRefresh)="refresherSubject.next()" [errorData]="vm.error" />
-    }
-    @case ('done') {
-      <mat-form-field>
-        <mat-label>Period</mat-label>
-        <mat-select [(ngModel)]="timetableIndex">
-          @for (item of vm.data; track item.name; let idx = $index) {
-            <mat-option [value]="idx">{{ item.name }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
+@if (timetableStore.status() === 'loading') {
+  <app-loading />
+} @else if (timetableStore.status() === 'error') {
+  <app-error
+    (onRefresh)="this.timetableStore.refresh()"
+    [errorData]="timetableStore.error()"
+  />
+} @else if (timetableStore.status() === 'done' && timetableStore.timetable()) {
+  <mat-form-field>
+    <mat-label>Period</mat-label>
+    <mat-select [(ngModel)]="timetableIndex">
+      @for (
+        item of timetableStore.timetable()!.schedules;
+        track item.name;
+        let idx = $index
+      ) {
+        <mat-option [value]="idx">{{ item.name }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
 
-      <app-schedule [journeys]="vm.data[timetableIndex()].arrivals" />
-    }
-  }
+  <app-schedule
+    [journeys]="
+      timetableStore.timetable()!.schedules[timetableIndex()].arrivals
+    "
+  />
+} @else {
+  <div>Timetable not available</div>
 }

@@ -139,17 +139,28 @@ export class StopService {
       .stopPointTimetable(lineId, stopId)
       .pipe(
         map((response) =>
-          StopService.toStopTimetable(response.timetable.routes[0]),
+          StopService.toStopTimetable(
+            response.timetable.departureStopId,
+            response.lineId,
+            response.timetable.routes[0],
+          ),
         ),
       );
   }
 
-  private static toStopTimetable = (route: TimetableRoute): StopTimetable =>
-    route.schedules.map((s) => ({
+  private static toStopTimetable = (
+    stopId: string,
+    lineId: string,
+    route: TimetableRoute,
+  ): StopTimetable => ({
+    stopId,
+    lineId,
+    schedules: route.schedules.map((s) => ({
       name: s.name,
       arrivals: s.knownJourneys.map((kj) => ({
         hour: kj.hour,
         minute: kj.minute,
       })),
-    }));
+    })),
+  });
 }

@@ -1,4 +1,8 @@
 export type StopTimetable = {
-  name: string;
-  arrivals: { hour: string; minute: string }[];
-}[];
+  stopId: string;
+  lineId: string;
+  schedules: {
+    name: string;
+    arrivals: { hour: string; minute: string }[];
+  }[];
+};
