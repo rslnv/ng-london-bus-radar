@@ -1,20 +1,45 @@
-import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { SidenavComponent } from './sidenav.component';
+import {
+  inputBinding,
+  provideZonelessChangeDetection,
+  signal,
+} from '@angular/core';
+import { ActivatedRoute, provideRouter, Routes } from '@angular/router';
 
 describe('SidenavComponent', () => {
   let component: SidenavComponent;
   let fixture: ComponentFixture<SidenavComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [NoopAnimationsModule]
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      providers: [
+        provideZonelessChangeDetection(),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              params: { id: 'foo' },
+            },
+          },
+        },
+      ],
+      imports: [NoopAnimationsModule],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SidenavComponent);
+    const isHandsetSignal = signal(true);
+    const showFavouritesSignal = signal(false);
+
+    fixture = TestBed.createComponent(SidenavComponent, {
+      bindings: [
+        inputBinding('isHandset', () => isHandsetSignal),
+        inputBinding('showFavourites', () => showFavouritesSignal),
+      ],
+    });
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
