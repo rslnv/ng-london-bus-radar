@@ -36,7 +36,7 @@ jobs:
         run: npm run test:ci
 
       - name: Build code
-        run: npm run build
+        run: npm run build -- --base-href="/ng-london-bus-radar/"
 
       - name: List files
         run: ls -Rlh dist/ng-london-bus-radar
