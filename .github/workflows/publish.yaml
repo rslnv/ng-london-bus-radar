@@ -42,7 +42,9 @@ jobs:
         run: ls -Rlh dist/ng-london-bus-radar
 
       - name: Save SHA
-        run: echo ${{ github.sha }} > "dist/ng-london-bus-radar/browser/sha.txt"
+        run: |
+          echo ${{ github.sha }} > "dist/ng-london-bus-radar/browser/sha.txt"
+          cat "dist/ng-london-bus-radar/browser/sha.txt"
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
