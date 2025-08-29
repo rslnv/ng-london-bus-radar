@@ -19,11 +19,7 @@ describe('SidenavComponent', () => {
         provideZonelessChangeDetection(),
         {
           provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              params: { id: 'foo' },
-            },
-          },
+          useValue: {},
         },
       ],
       imports: [NoopAnimationsModule],
