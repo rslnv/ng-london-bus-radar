@@ -3,6 +3,9 @@ name: Publish to GitHub Pages
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   install-dependencies:
     runs-on: ubuntu-latest
@@ -36,7 +39,7 @@ jobs:
         run: npm run build
 
       - name: List files
-        run: ls -Rlh
+        run: ls -Rlh dist/ng-london-bus-radar
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
