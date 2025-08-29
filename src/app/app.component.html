@@ -1,6 +1,10 @@
 @let isHandset = isHandset$ | async;
 @if (isHandset !== null) {
-  <app-sidenav [isHandset]="isHandset" [showFavourites]="favouritesStore.any()">
+  <app-sidenav
+    [isHandset]="isHandset"
+    [showFavourites]="favouritesStore.any()"
+    [version]="version()"
+  >
     <main>
       <router-outlet />
     </main>

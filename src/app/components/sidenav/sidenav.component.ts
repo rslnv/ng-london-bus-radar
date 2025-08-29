@@ -22,6 +22,7 @@ import { RouterModule } from '@angular/router';
 export class SidenavComponent {
   isHandset = input.required<boolean>();
   showFavourites = input<boolean>(false);
+  version = input<string | undefined>();
 
   isExpanded = signal(false);
 

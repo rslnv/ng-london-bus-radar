@@ -37,6 +37,10 @@
           </a>
         }
       }
+
+      @if (version() && (!isHandset() || isExpanded())) {
+        <div class="version">v: {{ version() }}</div>
+      }
     </mat-nav-list>
   </mat-sidenav>
 
