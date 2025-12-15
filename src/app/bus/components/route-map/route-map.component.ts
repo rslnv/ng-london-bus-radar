@@ -1,4 +1,4 @@
-import { Component, computed, effect, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import {
   AttributionControlDirective,
@@ -10,6 +10,7 @@ import {
 } from '@maplibre/ngx-maplibre-gl';
 import { LngLat, LngLatBounds, Map } from 'maplibre-gl';
 import { StopListItem } from '../../../models/stop-list-item';
+import { MapBounds } from '../../models/map-bounds';
 
 @Component({
   selector: 'app-route-map',
@@ -80,14 +81,11 @@ export class RouteMapComponent {
   stops = input.required<StopListItem[]>();
 
   bounds = computed(() => {
-    const boundsAsArray = this.stops()
-      .map((x) => [x.longitude, x.latitude, x.longitude, x.latitude])
+    const result = this.stops()
+      .map(RouteMapComponent.toMapBounds)
       .reduce(RouteMapComponent.getBounds);
 
-    return new LngLatBounds(
-      new LngLat(boundsAsArray[0], boundsAsArray[1]),
-      new LngLat(boundsAsArray[2], boundsAsArray[3]),
-    );
+    return RouteMapComponent.toLngLatBounds(result);
   });
 
   map: Map | null = null;
@@ -96,12 +94,23 @@ export class RouteMapComponent {
     console.log('Clicking stop', stopId);
   }
 
-  private static getBounds(prev: number[], curr: number[]): number[] {
-    return [
-      Math.min(prev[0], curr[0]),
-      Math.min(prev[1], curr[1]),
-      Math.max(prev[2], curr[2]),
-      Math.max(prev[3], curr[3]),
-    ];
-  }
+  private static toMapBounds = (model: StopListItem) => ({
+    swLng: model.longitude,
+    swLat: model.latitude,
+    neLng: model.longitude,
+    neLat: model.latitude,
+  });
+
+  private static toLngLatBounds = (model: MapBounds) =>
+    new LngLatBounds(
+      new LngLat(model.swLng, model.swLat),
+      new LngLat(model.neLng, model.neLat),
+    );
+
+  private static getBounds = (prev: MapBounds, curr: MapBounds): MapBounds => ({
+    swLng: Math.min(prev.swLng, curr.swLng),
+    swLat: Math.min(prev.swLat, curr.swLat),
+    neLng: Math.max(prev.neLng, curr.neLng),
+    neLat: Math.max(prev.neLat, curr.neLat),
+  });
 }
