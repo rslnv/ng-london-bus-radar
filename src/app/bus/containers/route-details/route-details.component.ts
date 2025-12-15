@@ -23,6 +23,7 @@ import {
 } from '../../../models/view-state';
 import { BusRouteDetailsResult } from '../../models/bus-route-details-result';
 import { BusRouteService } from '../../services/bus-route.service';
+import { RouteMapComponent } from '../../components/route-map/route-map.component';
 
 @Component({
   selector: 'app-bus-route-details',
@@ -35,6 +36,7 @@ import { BusRouteService } from '../../services/bus-route.service';
     RouterModule,
     LoadingComponent,
     ErrorComponent,
+    RouteMapComponent,
   ],
 })
 export class RouteDetailsComponent {

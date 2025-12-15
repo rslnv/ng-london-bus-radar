@@ -8,7 +8,13 @@ import { StopArrivalsComponent } from './stop/containers/arrivals/arrivals.compo
 import { FindStopComponent } from './stop/containers/find-stop/find-stop.component';
 
 export const routes: Routes = [
-  { path: 'bus/:routeId/:direction', component: RouteDetailsComponent },
+  {
+    path: 'bus/:routeId/:direction',
+    loadComponent: () =>
+      import('./bus/containers/route-details/route-details.component').then(
+        (c) => c.RouteDetailsComponent,
+      ),
+  },
   {
     path: 'bus/:routeId',
     redirectTo: ({ params }) => {

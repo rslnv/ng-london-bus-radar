@@ -33,6 +33,8 @@
       </div>
     </a>
 
+    <app-route-map [stops]="viewModel.data.stops" />
+
     <div class="content">
       @for (stop of viewModel.data.stops; track stop.id) {
         <a [routerLink]="['/stop', stop.id, viewModel.data.lineId]">
