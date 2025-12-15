@@ -10,7 +10,6 @@ import {
 } from '@maplibre/ngx-maplibre-gl';
 import { LngLat, LngLatBounds, Map } from 'maplibre-gl';
 import { StopListItem } from '../../../models/stop-list-item';
-import { MapBounds } from '../../models/map-bounds';
 
 @Component({
   selector: 'app-route-map',
@@ -81,11 +80,16 @@ export class RouteMapComponent {
   stops = input.required<StopListItem[]>();
 
   bounds = computed(() => {
-    const result = this.stops()
-      .map(RouteMapComponent.toMapBounds)
-      .reduce(RouteMapComponent.getBounds);
+    const startLng = this.stops()[0].longitude;
+    const startLat = this.stops()[0].latitude;
+    const startLngLat = new LngLat(startLng, startLat);
 
-    return RouteMapComponent.toLngLatBounds(result);
+    return this.stops()
+      .map<[number, number]>((x) => [x.longitude, x.latitude])
+      .reduce(
+        (bounds, coord) => bounds.extend(coord),
+        new LngLatBounds(startLngLat, startLngLat),
+      );
   });
 
   map: Map | null = null;
@@ -93,24 +97,4 @@ export class RouteMapComponent {
   click(stopId: string) {
     console.log('Clicking stop', stopId);
   }
-
-  private static toMapBounds = (model: StopListItem) => ({
-    swLng: model.longitude,
-    swLat: model.latitude,
-    neLng: model.longitude,
-    neLat: model.latitude,
-  });
-
-  private static toLngLatBounds = (model: MapBounds) =>
-    new LngLatBounds(
-      new LngLat(model.swLng, model.swLat),
-      new LngLat(model.neLng, model.neLat),
-    );
-
-  private static getBounds = (prev: MapBounds, curr: MapBounds): MapBounds => ({
-    swLng: Math.min(prev.swLng, curr.swLng),
-    swLat: Math.min(prev.swLat, curr.swLat),
-    neLng: Math.max(prev.neLng, curr.neLng),
-    neLat: Math.max(prev.neLat, curr.neLat),
-  });
 }
