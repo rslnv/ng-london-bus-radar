@@ -122,8 +122,6 @@ export class RouteMapComponent {
 
   path = input.required<[number, number][]>();
 
-  foo = effect(() => console.log('path', JSON.stringify(this.path())));
-
   click(stopId: string) {
     console.log('Clicking stop', stopId);
   }
