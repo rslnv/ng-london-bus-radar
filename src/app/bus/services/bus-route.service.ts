@@ -1,12 +1,12 @@
 import { inject, Injectable } from '@angular/core';
-import { TflService } from '../../services/tfl.service';
-import { map } from 'rxjs/operators';
-import { RouteSearchResponse } from '../../models/api/route-search-response';
 import { Observable } from 'rxjs';
-import { BusRouteSearchResult } from '../models/bus-route-search-result';
-import { RouteSequence } from '../../models/api/route-sequence';
-import { BusRouteDetailsResult } from '../models/bus-route-details-result';
+import { map } from 'rxjs/operators';
 import { MatchedStop } from '../../models/api/matched-stop';
+import { RouteSearchResponse } from '../../models/api/route-search-response';
+import { RouteSequence } from '../../models/api/route-sequence';
+import { TflService } from '../../services/tfl.service';
+import { BusRouteDetailsResult } from '../models/bus-route-details-result';
+import { BusRouteSearchResult } from '../models/bus-route-search-result';
 
 @Injectable({ providedIn: 'root' })
 export class BusRouteService {
@@ -101,6 +101,7 @@ export class BusRouteService {
       from,
       to,
       stops,
+      path: JSON.parse(model.lineStrings[0])[0],
     };
 
     return detailsResult;

@@ -33,7 +33,10 @@
       </div>
     </a>
 
-    <app-route-map [stops]="viewModel.data.stops" />
+    <app-route-map
+      [stops]="viewModel.data.stops"
+      [path]="viewModel.data.path"
+    />
 
     <div class="content">
       @for (stop of viewModel.data.stops; track stop.id) {

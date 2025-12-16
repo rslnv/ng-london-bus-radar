@@ -1,14 +1,17 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, effect, input } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import {
   AttributionControlDirective,
   ControlComponent,
+  FeatureComponent,
+  GeoJSONSourceComponent,
   GeolocateControlDirective,
+  LayerComponent,
   MapComponent,
   MarkerComponent,
   NavigationControlDirective,
 } from '@maplibre/ngx-maplibre-gl';
-import { LngLat, LngLatBounds, Map } from 'maplibre-gl';
+import { LngLat, LngLatBounds } from 'maplibre-gl';
 import { StopListItem } from '../../../models/stop-list-item';
 
 @Component({
@@ -41,7 +44,6 @@ import { StopListItem } from '../../../models/stop-list-item';
       }"
       [attributionControl]="false"
       [canvasContextAttributes]="{ preserveDrawingBuffer: true }"
-      (mapLoad)="map = $event"
     >
       <mgl-control mglAttribution position="top-right" [compact]="true" />
       <mgl-control
@@ -52,6 +54,29 @@ import { StopListItem } from '../../../models/stop-list-item';
         }"
       />
       <mgl-control mglNavigation position="bottom-right" />
+
+      <mgl-geojson-source id="pathSource">
+        <mgl-feature
+          [geometry]="{
+            type: 'LineString',
+            coordinates: path(),
+          }"
+        />
+      </mgl-geojson-source>
+      <mgl-layer
+        id="route"
+        type="line"
+        source="pathSource"
+        [layout]="{
+          'line-join': 'round',
+          'line-cap': 'round',
+        }"
+        [paint]="{
+          'line-color': '#195b92',
+          'line-width': 5,
+        }"
+      >
+      </mgl-layer>
 
       @for (stop of this.stops(); track stop.id) {
         <mgl-marker [lngLat]="[stop.longitude, stop.latitude]">
@@ -69,7 +94,10 @@ import { StopListItem } from '../../../models/stop-list-item';
   imports: [
     AttributionControlDirective,
     ControlComponent,
+    FeatureComponent,
+    GeoJSONSourceComponent,
     GeolocateControlDirective,
+    LayerComponent,
     MapComponent,
     MarkerComponent,
     MatIcon,
@@ -92,7 +120,9 @@ export class RouteMapComponent {
       );
   });
 
-  map: Map | null = null;
+  path = input.required<[number, number][]>();
+
+  foo = effect(() => console.log('path', JSON.stringify(this.path())));
 
   click(stopId: string) {
     console.log('Clicking stop', stopId);

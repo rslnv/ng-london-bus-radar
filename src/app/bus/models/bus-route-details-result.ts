@@ -8,4 +8,5 @@ export type BusRouteDetailsResult = {
   from: string;
   to: string;
   stops: StopListItem[];
+  path: [number, number][];
 };
