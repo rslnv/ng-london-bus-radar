@@ -15,6 +15,7 @@
 
   &.expanded {
     width: 220px;
+
     .mat-mdc-list-item {
       span {
         display: block;
@@ -45,4 +46,8 @@
   position: sticky;
   top: 0;
   z-index: 1;
+}
+
+mat-sidenav-content {
+  margin-left: 56px;
 }
